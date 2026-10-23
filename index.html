@@ -32,7 +32,6 @@
     }
   </script>
   <style>
-    /* Custom styles for glowing options and smooth scroll */
     html { scroll-behavior: smooth; }
     
     .glow-correct {
@@ -55,7 +54,6 @@
       background-color: rgba(239, 68, 68, 0.15) !important;
     }
     
-    /* Hide scrollbar for clean UI in category tabs */
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
@@ -89,14 +87,14 @@
     <!-- MAIN CONTENT VIEW AREA -->
     <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
       
-      <!-- AUTH MODAL / VIEW (IF NOT LOGGED IN OR SWITCHING) -->
+      <!-- AUTH MODAL / VIEW -->
       <section id="auth-view" class="hidden max-w-md mx-auto my-8 bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700">
         <div class="text-center mb-6">
           <div class="inline-flex p-3 rounded-2xl bg-sky-100 dark:bg-sky-900/40 text-sky-600 dark:text-sky-400 mb-3">
             <i class="fa-solid fa-user-lock text-2xl"></i>
           </div>
           <h2 id="auth-title" class="text-2xl font-bold">Đăng nhập tài khoản</h2>
-          <p id="auth-subtitle" class="text-sm text-slate-500 dark:text-slate-400 mt-1">Đăng nhập để lưu lịch sử làm bài & kết quả ôn tập</p>
+          <p id="auth-subtitle" class="text-sm text-slate-500 dark:text-slate-400 mt-1">Đăng nhập để lưu lịch sử làm bài & tiến trình ôn tập</p>
         </div>
 
         <form id="auth-form" onsubmit="app.handleAuth(event)" class="space-y-4">
@@ -144,9 +142,8 @@
               Kho câu hỏi chuẩn xác 338 câu
             </span>
             <h2 class="text-2xl sm:text-4xl font-extrabold leading-tight">Ôn Luyện Trắc Nghiệm Tin Học Đại Cường & Văn Phòng</h2>
-            <p class="mt-2 text-sky-100 text-sm sm:text-base">Gồm 6 Đề thi chi tiết và 1 Đề Tổng Hợp ngẫu nhiên 60 câu giúp rèn luyện kỹ năng làm bài đạt điểm tối đa.</p>
+            <p class="mt-2 text-sky-100 text-sm sm:text-base">Hệ thống tự động lưu tiến trình làm bài dở dang, bạn có thể thoát ra và vào làm tiếp bất cứ lúc nào!</p>
           </div>
-          <!-- Decorative SVG -->
           <i class="fa-solid fa-graduation-cap absolute -right-6 -bottom-6 text-9xl text-white/10 rotate-12 pointer-events-none"></i>
         </div>
 
@@ -174,7 +171,7 @@
         <!-- Quiz Header Info -->
         <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div class="flex items-center space-x-3 w-full sm:w-auto">
-            <button onclick="app.confirmExitQuiz()" class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300">
+            <button onclick="app.confirmExitQuiz()" class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300" title="Trở về">
               <i class="fa-solid fa-arrow-left"></i>
             </button>
             <div>
@@ -183,8 +180,8 @@
             </div>
           </div>
 
-          <!-- Timer & Stats Badge -->
-          <div class="flex items-center space-x-4 w-full sm:w-auto justify-between sm:justify-end border-t sm:border-0 pt-3 sm:pt-0 border-slate-100 dark:border-slate-700">
+          <!-- Timer & Action Buttons -->
+          <div class="flex items-center space-x-3 w-full sm:w-auto justify-between sm:justify-end border-t sm:border-0 pt-3 sm:pt-0 border-slate-100 dark:border-slate-700">
             <div class="flex items-center space-x-2 text-amber-600 dark:text-amber-400 font-semibold text-sm bg-amber-50 dark:bg-amber-950/40 px-3 py-1.5 rounded-xl border border-amber-200 dark:border-amber-800/50">
               <i class="fa-regular fa-clock"></i>
               <span id="quiz-timer">00:00</span>
@@ -193,6 +190,9 @@
               <i class="fa-solid fa-check"></i>
               <span id="quiz-score-live">Đúng: 0</span>
             </div>
+            <button onclick="app.resetCurrentQuiz()" class="px-3 py-1.5 bg-rose-50 text-rose-600 hover:bg-rose-100 dark:bg-rose-950/40 dark:text-rose-400 rounded-xl text-xs font-semibold border border-rose-200 dark:border-rose-800 transition" title="Làm lại từ đầu">
+              <i class="fa-solid fa-rotate-right mr-1"></i> Làm lại từ đầu
+            </button>
           </div>
         </div>
 
@@ -205,7 +205,6 @@
 
         <!-- Question Box Container -->
         <div id="quiz-question-card" class="bg-white dark:bg-slate-800 p-5 sm:p-8 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-6">
-          <!-- Question text & badge -->
           <div class="space-y-3">
             <div class="flex items-center justify-between">
               <span id="question-type-badge" class="px-3 py-1 text-xs font-semibold rounded-full bg-sky-100 text-sky-700 dark:bg-sky-900/50 dark:text-sky-300">
@@ -231,7 +230,6 @@
               <i class="fa-solid fa-chevron-left mr-1"></i> Câu trước
             </button>
 
-            <!-- Instant check button for multiple choice questions if needed -->
             <button id="btn-check-q" onclick="app.checkAnswer()" class="hidden px-6 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-sm font-semibold shadow-md transition active:scale-95">
               Xác nhận (Nhiều đáp án)
             </button>
@@ -301,7 +299,6 @@
 
   <!-- SCRIPT DATA & APP LOGIC -->
   <script>
-    // COMPLETE QUIZ DATABASE EXTRACTED FROM PDFS
     const RAW_TEST_DATA = {
       test1: [
         { id: 1, type: 'single', q: 'Hầu hết các máy tính sử dụng bộ nhớ flash để:', options: ['Kết nối và cổng', '2 loại SOF bộ nhớ cache.', 'Bộ nhớ flash.', 'lưu giữ các chi lệnh khởi đầu vì nó cho phép các máy tính dễ dàng để cập nhật nội dung của nó.'], correct: [3] },
@@ -660,14 +657,14 @@
       constructor() {
         this.currentUser = JSON.parse(localStorage.getItem('tin_hoc_user')) || null;
         this.users = JSON.parse(localStorage.getItem('tin_hoc_users_db')) || {};
-        this.authMode = 'login'; // 'login' or 'register'
+        this.authMode = 'login';
         
         // Quiz runtime state
         this.currentTestKey = null;
         this.currentQuestions = [];
         this.currentIndex = 0;
-        this.userAnswers = {}; // { qIndex: [selectedIndexes] }
-        this.checkedQuestions = {}; // { qIndex: true }
+        this.userAnswers = {};
+        this.checkedQuestions = {};
         this.timerSeconds = 0;
         this.timerInterval = null;
         
@@ -683,7 +680,6 @@
         }
       }
 
-      // NAV USER STATUS BAR
       renderNav() {
         const container = document.getElementById('nav-user-section');
         if (this.currentUser) {
@@ -705,7 +701,6 @@
         }
       }
 
-      // VIEW SWITCHER
       showView(viewName) {
         ['auth-view', 'home-view', 'quiz-view', 'result-view'].forEach(id => {
           document.getElementById(id).classList.add('hidden');
@@ -736,7 +731,7 @@
           toggleBtn.textContent = 'Đăng nhập';
         } else {
           title.textContent = 'Đăng nhập tài khoản';
-          subtitle.textContent = 'Đăng nhập để lưu lịch sử làm bài & kết quả ôn tập';
+          subtitle.textContent = 'Đăng nhập để lưu lịch sử làm bài & tiến trình ôn tập';
           submitBtn.textContent = 'Đăng nhập';
           toggleText.textContent = 'Chưa có tài khoản?';
           toggleBtn.textContent = 'Đăng ký ngay';
@@ -761,15 +756,13 @@
             errorDiv.classList.remove('hidden');
             return;
           }
-          // Register new user
-          this.users[username] = { password: password, history: {} };
+          this.users[username] = { password: password, history: {}, activeTests: {} };
           localStorage.setItem('tin_hoc_users_db', JSON.stringify(this.users));
           this.currentUser = { username: username };
           localStorage.setItem('tin_hoc_user', JSON.stringify(this.currentUser));
           this.renderNav();
           this.navToHome();
         } else {
-          // Login
           if (!this.users[username] || this.users[username].password !== password) {
             errorDiv.textContent = 'Sai tên đăng nhập hoặc mật khẩu!';
             errorDiv.classList.remove('hidden');
@@ -789,7 +782,6 @@
         this.showView('auth');
       }
 
-      // HOME DASHBOARD & TEST SELECTION
       navToHome() {
         if (!this.currentUser) return this.showView('auth');
         this.renderUserStats();
@@ -797,28 +789,65 @@
         this.showView('home');
       }
 
-      getUserHistory() {
-        if (!this.currentUser) return {};
-        const userData = this.users[this.currentUser.username];
-        return (userData && userData.history) ? userData.history : {};
+      getUserData() {
+        if (!this.currentUser) return { history: {}, activeTests: {} };
+        if (!this.users[this.currentUser.username]) {
+          this.users[this.currentUser.username] = { password: '', history: {}, activeTests: {} };
+        }
+        return this.users[this.currentUser.username];
+      }
+
+      saveUserData() {
+        if (!this.currentUser) return;
+        localStorage.setItem('tin_hoc_users_db', JSON.stringify(this.users));
+      }
+
+      // LƯU TIẾN TRÌNH DỞ DANG
+      saveProgress() {
+        if (!this.currentUser || !this.currentTestKey) return;
+        const userData = this.getUserData();
+        if (!userData.activeTests) userData.activeTests = {};
+
+        userData.activeTests[this.currentTestKey] = {
+          userAnswers: this.userAnswers,
+          checkedQuestions: this.checkedQuestions,
+          currentIndex: this.currentIndex,
+          timerSeconds: this.timerSeconds,
+          questions: this.currentQuestions
+        };
+        this.saveUserData();
+      }
+
+      clearProgress(testKey) {
+        if (!this.currentUser) return;
+        const userData = this.getUserData();
+        if (userData.activeTests && userData.activeTests[testKey]) {
+          delete userData.activeTests[testKey];
+          this.saveUserData();
+        }
       }
 
       saveTestResult(testKey, score, correctCount, totalCount, timeSpent) {
         if (!this.currentUser) return;
-        const history = this.getUserHistory();
-        history[testKey] = {
+        const userData = this.getUserData();
+        if (!userData.history) userData.history = {};
+
+        userData.history[testKey] = {
           score: score,
           correctCount: correctCount,
           totalCount: totalCount,
           timeSpent: timeSpent,
           date: new Date().toLocaleDateString('vi-VN')
         };
-        this.users[this.currentUser.username].history = history;
-        localStorage.setItem('tin_hoc_users_db', JSON.stringify(this.users));
+
+        // Xóa tiến trình dở dang sau khi nộp bài xong
+        this.clearProgress(testKey);
+        this.saveUserData();
       }
 
       renderUserStats() {
-        const history = this.getUserHistory();
+        const userData = this.getUserData();
+        const history = userData.history || {};
         const completedTests = Object.keys(history).length;
         let totalCorrect = 0;
         let totalAnswered = 0;
@@ -865,7 +894,9 @@
 
       renderTestCards() {
         const grid = document.getElementById('test-list-grid');
-        const history = this.getUserHistory();
+        const userData = this.getUserData();
+        const history = userData.history || {};
+        const activeTests = userData.activeTests || {};
 
         const tests = [
           { key: 'test1', title: 'TEST 1', count: RAW_TEST_DATA.test1.length, desc: '60 câu phần cứng, phần mềm, Windows, mạng & Access', icon: 'fa-1', color: 'from-blue-500 to-cyan-500' },
@@ -874,12 +905,42 @@
           { key: 'test4', title: 'TEST 4', count: RAW_TEST_DATA.test4.length, desc: '60 câu mạng LAN/WAN, Email, RAM, ROM, Bit Byte', icon: 'fa-4', color: 'from-amber-500 to-orange-500' },
           { key: 'test5', title: 'TEST 5', count: RAW_TEST_DATA.test5.length, desc: '60 câu Excel nâng cao, địa chỉ ô, tìm kiếm & Windows', icon: 'fa-5', color: 'from-rose-500 to-pink-500' },
           { key: 'test6', title: 'TEST 6', count: RAW_TEST_DATA.test6.length, desc: '38 câu Word 2010, PowerPoint 2010, phím tắt & SSD', icon: 'fa-6', color: 'from-violet-500 to-purple-600' },
-          { key: 'combined', title: 'BÀI TEST TỔNG HỢP', count: 60, desc: 'Phối trộn ngẫu nhiên 60 câu lấy từ 6 đề test trên', icon: 'fa-shuffle', color: 'from-fuchsia-600 to-pink-600', isSpecial: true }
+          { key: 'combined', title: 'BÀI TEST TỔNG HỢP', count: 60, desc: 'Phối trộn ngẫu nhiên 60 câu lấy từ 6 đề test trên', icon: 'fa-shuffle', color: 'from-fuchsia-600 to-pink-600' }
         ];
 
         grid.innerHTML = tests.map(t => {
           const past = history[t.key];
-          const badgeScore = past ? `<span class="text-xs bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300 font-semibold px-2.5 py-1 rounded-full">Đã làm: ${past.score}/10đ</span>` : `<span class="text-xs bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300 px-2.5 py-1 rounded-full">Chưa làm</span>`;
+          const hasActive = activeTests[t.key];
+
+          let badgeScore = `<span class="text-xs bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300 px-2.5 py-1 rounded-full">Chưa làm</span>`;
+          if (hasActive) {
+            const answeredCount = Object.keys(hasActive.checkedQuestions || {}).length;
+            badgeScore = `<span class="text-xs bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-300 font-semibold px-2.5 py-1 rounded-full animate-pulse"><i class="fa-solid fa-spinner fa-spin mr-1"></i>Đang dở (${answeredCount}/${t.count})</span>`;
+          } else if (past) {
+            badgeScore = `<span class="text-xs bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300 font-semibold px-2.5 py-1 rounded-full">Điểm cũ: ${past.score}/10đ</span>`;
+          }
+
+          let actionButtonsHtml = '';
+          if (hasActive) {
+            actionButtonsHtml = `
+              <div class="mt-6 flex items-center space-x-2">
+                <button onclick="app.startQuiz('${t.key}', false)" class="flex-1 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-semibold text-xs sm:text-sm shadow transition active:scale-95 flex items-center justify-center space-x-1">
+                  <i class="fa-solid fa-play text-xs"></i>
+                  <span>Làm tiếp</span>
+                </button>
+                <button onclick="app.startQuiz('${t.key}', true)" class="px-3 py-2.5 rounded-xl bg-slate-100 hover:bg-rose-100 text-slate-600 hover:text-rose-600 dark:bg-slate-700 dark:hover:bg-rose-950/60 dark:text-slate-300 dark:hover:text-rose-400 font-semibold text-xs transition" title="Làm lại từ đầu">
+                  <i class="fa-solid fa-rotate-right"></i>
+                </button>
+              </div>
+            `;
+          } else {
+            actionButtonsHtml = `
+              <button onclick="app.startQuiz('${t.key}', true)" class="mt-6 w-full py-3 rounded-2xl bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-semibold text-sm hover:opacity-90 shadow transition active:scale-95 flex items-center justify-center space-x-2">
+                <i class="fa-solid fa-play text-xs"></i>
+                <span>${past ? 'Làm lại bài này' : 'Bắt Đầu Làm Bài'}</span>
+              </button>
+            `;
+          }
 
           return `
             <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col justify-between hover:shadow-md transition">
@@ -898,37 +959,44 @@
                 </div>
               </div>
 
-              <button onclick="app.startQuiz('${t.key}')" class="mt-6 w-full py-3 rounded-2xl bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-semibold text-sm hover:opacity-90 shadow transition active:scale-95 flex items-center justify-center space-x-2">
-                <i class="fa-solid fa-play text-xs"></i>
-                <span>Bắt Đầu Làm Bài</span>
-              </button>
+              ${actionButtonsHtml}
             </div>
           `;
         }).join('');
       }
 
-      // QUIZ EXECUTION ENGINE
-      startQuiz(testKey) {
+      startQuiz(testKey, forceNew = false) {
         this.currentTestKey = testKey;
-        this.currentIndex = 0;
-        this.userAnswers = {};
-        this.checkedQuestions = {};
+        const userData = this.getUserData();
+        const activeData = userData.activeTests ? userData.activeTests[testKey] : null;
 
-        // Generate Question List
-        if (testKey === 'combined') {
-          // Flatten all questions from test1-6
-          let allQ = [];
-          Object.keys(RAW_TEST_DATA).forEach(k => {
-            allQ = allQ.concat(RAW_TEST_DATA[k]);
-          });
-          // Shuffle array
-          const shuffled = [...allQ].sort(() => 0.5 - Math.random());
-          this.currentQuestions = shuffled.slice(0, 60);
+        if (!forceNew && activeData) {
+          // Khôi phục tiến trình đang làm dở
+          this.userAnswers = activeData.userAnswers || {};
+          this.checkedQuestions = activeData.checkedQuestions || {};
+          this.currentIndex = activeData.currentIndex || 0;
+          this.timerSeconds = activeData.timerSeconds || 0;
+          this.currentQuestions = activeData.questions || [...RAW_TEST_DATA[testKey]];
         } else {
-          this.currentQuestions = [...RAW_TEST_DATA[testKey]];
+          // Tạo bài làm mới
+          this.currentIndex = 0;
+          this.userAnswers = {};
+          this.checkedQuestions = {};
+          this.timerSeconds = 0;
+
+          if (testKey === 'combined') {
+            let allQ = [];
+            Object.keys(RAW_TEST_DATA).forEach(k => {
+              allQ = allQ.concat(RAW_TEST_DATA[k]);
+            });
+            const shuffled = [...allQ].sort(() => 0.5 - Math.random());
+            this.currentQuestions = shuffled.slice(0, 60);
+          } else {
+            this.currentQuestions = [...RAW_TEST_DATA[testKey]];
+          }
+          this.clearProgress(testKey);
         }
 
-        // Set Quiz UI
         const testNames = {
           test1: 'TEST 1 (60 câu)', test2: 'TEST 2 (60 câu)', test3: 'TEST 3 (60 câu)',
           test4: 'TEST 4 (60 câu)', test5: 'TEST 5 (60 câu)', test6: 'TEST 6 (38 câu)',
@@ -936,19 +1004,30 @@
         };
         document.getElementById('quiz-title').textContent = testNames[testKey] || 'Bài Test';
 
-        // Start Timer
-        this.timerSeconds = 0;
+        // Khởi chạy đếm giờ
         clearInterval(this.timerInterval);
+        this.updateTimerDisplay();
         this.timerInterval = setInterval(() => {
           this.timerSeconds++;
-          const mins = String(Math.floor(this.timerSeconds / 60)).padStart(2, '0');
-          const secs = String(this.timerSeconds % 60).padStart(2, '0');
-          document.getElementById('quiz-timer').textContent = `${mins}:${secs}`;
+          this.updateTimerDisplay();
+          this.saveProgress();
         }, 1000);
 
         this.renderQuizNavPills();
         this.renderCurrentQuestion();
         this.showView('quiz');
+      }
+
+      updateTimerDisplay() {
+        const mins = String(Math.floor(this.timerSeconds / 60)).padStart(2, '0');
+        const secs = String(this.timerSeconds % 60).padStart(2, '0');
+        document.getElementById('quiz-timer').textContent = `${mins}:${secs}`;
+      }
+
+      resetCurrentQuiz() {
+        if (confirm('Bạn có chắc muốn làm lại từ đầu bài test này? Tiến trình đang làm dở sẽ bị xóa hoàn toàn.')) {
+          this.startQuiz(this.currentTestKey, true);
+        }
       }
 
       renderQuizNavPills() {
@@ -960,7 +1039,6 @@
 
           let btnClass = 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300';
           if (isChecked) {
-            // Check correctness for pill badge color
             const isCorrect = this.evaluateQuestion(idx);
             btnClass = isCorrect ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white';
           } else if (isAnswered) {
@@ -986,7 +1064,7 @@
         document.getElementById('question-type-badge').textContent = q.type === 'multiple' ? 'Chọn NHIỀU đáp án' : 'Chọn 1 đáp án';
         document.getElementById('question-text').textContent = q.q;
 
-        // Score Live Update
+        // Điểm số cập nhật tức thì
         let correctCount = 0;
         Object.keys(this.checkedQuestions).forEach(idx => {
           if (this.evaluateQuestion(parseInt(idx))) correctCount++;
@@ -1028,17 +1106,13 @@
           `;
         }).join('');
 
-        // Navigation buttons
         document.getElementById('btn-prev-q').disabled = (this.currentIndex === 0);
         document.getElementById('btn-next-q').disabled = (this.currentIndex === this.currentQuestions.length - 1);
 
-        // Show/hide check button for multiple choice questions if not answered yet
         const checkBtn = document.getElementById('btn-check-q');
         if (q.type === 'multiple' && !isChecked) {
           checkBtn.classList.remove('hidden');
           checkBtn.textContent = 'Xác Nhận (Nhiều đáp án)';
-          checkBtn.disabled = false;
-          checkBtn.classList.remove('opacity-50');
         } else {
           checkBtn.classList.add('hidden');
         }
@@ -1047,7 +1121,7 @@
       }
 
       selectOption(optIdx) {
-        if (this.checkedQuestions[this.currentIndex]) return; // locked after checking
+        if (this.checkedQuestions[this.currentIndex]) return;
 
         const q = this.currentQuestions[this.currentIndex];
         let currentAnswers = this.userAnswers[this.currentIndex] ? [...this.userAnswers[this.currentIndex]] : [];
@@ -1059,12 +1133,14 @@
             currentAnswers.push(optIdx);
           }
           this.userAnswers[this.currentIndex] = currentAnswers;
+          this.saveProgress();
           this.renderCurrentQuestion();
         } else {
-          // Single choice question: Instant evaluation on click
+          // Câu hỏi 1 đáp án: Chọn là báo đúng/sai luôn
           currentAnswers = [optIdx];
           this.userAnswers[this.currentIndex] = currentAnswers;
           this.checkedQuestions[this.currentIndex] = true;
+          this.saveProgress();
           this.renderCurrentQuestion();
         }
       }
@@ -1077,6 +1153,7 @@
         }
 
         this.checkedQuestions[this.currentIndex] = true;
+        this.saveProgress();
         this.renderCurrentQuestion();
       }
 
@@ -1090,6 +1167,7 @@
       nextQuestion() {
         if (this.currentIndex < this.currentQuestions.length - 1) {
           this.currentIndex++;
+          this.saveProgress();
           this.renderCurrentQuestion();
         }
       }
@@ -1097,31 +1175,31 @@
       prevQuestion() {
         if (this.currentIndex > 0) {
           this.currentIndex--;
+          this.saveProgress();
           this.renderCurrentQuestion();
         }
       }
 
       jumpToQuestion(idx) {
         this.currentIndex = idx;
+        this.saveProgress();
         this.renderCurrentQuestion();
       }
 
       confirmExitQuiz() {
-        if (confirm('Bạn có chắc muốn thoát bài test? Tiến trình hiện tại chưa nộp sẽ không được tính điểm.')) {
-          clearInterval(this.timerInterval);
-          this.navToHome();
-        }
+        clearInterval(this.timerInterval);
+        this.saveProgress();
+        this.navToHome();
       }
 
       finishQuiz() {
-        // Auto check all unchecked questions
+        // Tự động kiểm tra chấm điểm tất cả câu chưa check
         this.currentQuestions.forEach((_, idx) => {
           this.checkedQuestions[idx] = true;
         });
 
         clearInterval(this.timerInterval);
 
-        // Calculate final score
         let correctCount = 0;
         this.currentQuestions.forEach((_, idx) => {
           if (this.evaluateQuestion(idx)) correctCount++;
@@ -1130,15 +1208,12 @@
         const total = this.currentQuestions.length;
         const score10 = ((correctCount / total) * 10).toFixed(2);
 
-        // Formatted Time
         const mins = String(Math.floor(this.timerSeconds / 60)).padStart(2, '0');
         const secs = String(this.timerSeconds % 60).padStart(2, '0');
         const timeStr = `${mins}:${secs}`;
 
-        // Save result
         this.saveTestResult(this.currentTestKey, score10, correctCount, total, timeStr);
 
-        // Display Result View
         document.getElementById('result-test-name').textContent = document.getElementById('quiz-title').textContent;
         document.getElementById('result-score').textContent = `${score10} / 10`;
         document.getElementById('result-correct').textContent = `${correctCount}/${total}`;
@@ -1163,7 +1238,6 @@
       }
     }
 
-    // INITIALIZE APP ON WINDOW LOAD
     let app;
     window.onload = function() {
       app = new App();
