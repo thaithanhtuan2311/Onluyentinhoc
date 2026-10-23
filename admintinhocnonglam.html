@@ -1,364 +1,1173 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trang Quản Lý Sinh Viên - Admin</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Font Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-    </style>
-</head>
-<body class="bg-slate-100 min-h-screen text-slate-800">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ứng dụng Ôn luyện Tin học Văn phòng</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Inter Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              500: '#0284c7',
+              600: '#0284c7',
+              700: '#0369a1',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom styles for glowing options and smooth scroll */
+    html { scroll-behavior: smooth; }
+    
+    .glow-correct {
+      border-color: #22c55e !important;
+      background-color: #f0fdf4 !important;
+      box-shadow: 0 0 15px rgba(34, 197, 94, 0.4);
+    }
+    
+    .glow-incorrect {
+      border-color: #ef4444 !important;
+      background-color: #fef2f2 !important;
+      box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+    }
 
-    <!-- Header / Navbar -->
-    <header class="bg-indigo-900 text-white shadow-lg sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <div class="bg-indigo-700 p-2 rounded-lg">
-                    <i class="fa-solid fa-user-shield text-xl text-amber-400"></i>
-                </div>
-                <div>
-                    <h1 class="font-bold text-lg leading-tight">Hệ Thống Quản Lý Admin</h1>
-                    <p class="text-xs text-indigo-300">Quản lý Sinh viên & Lịch sử Làm bài Tin học</p>
-                </div>
-            </div>
-            <div class="flex items-center space-x-4">
-                <a href="index.html" target="_blank" class="text-sm bg-indigo-800 hover:bg-indigo-700 text-indigo-100 px-3 py-1.5 rounded-lg border border-indigo-600 transition flex items-center gap-2">
-                    <i class="fa-solid fa-external-link text-xs"></i> Xem Trang Sinh Viên
-                </a>
-                <button onclick="logoutAdmin()" class="text-sm bg-rose-600 hover:bg-rose-700 text-white px-3 py-1.5 rounded-lg font-medium transition flex items-center gap-1.5">
-                    <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
-                </button>
-            </div>
+    .dark .glow-correct {
+      background-color: rgba(34, 197, 94, 0.15) !important;
+    }
+
+    .dark .glow-incorrect {
+      background-color: rgba(239, 68, 68, 0.15) !important;
+    }
+    
+    /* Hide scrollbar for clean UI in category tabs */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 min-h-screen font-sans flex flex-col">
+
+  <!-- APP CONTAINER -->
+  <div id="app" class="flex-1 flex flex-col min-h-screen">
+    
+    <!-- NAVBAR -->
+    <header class="sticky top-0 z-30 bg-white/90 dark:bg-slate-800/90 backdrop-blur border-b border-slate-200 dark:border-slate-700 shadow-sm">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        <!-- Logo / Brand -->
+        <div class="flex items-center space-x-3 cursor-pointer" onclick="app.navToHome()">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center text-white shadow-md">
+            <i class="fa-solid fa-laptop-code text-lg"></i>
+          </div>
+          <div>
+            <h1 class="font-bold text-lg leading-tight text-slate-900 dark:text-white">Ôn Luyện Tin Học</h1>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Trắc nghiệm & Luyện thi</p>
+          </div>
         </div>
+
+        <!-- User Controls / Auth Status -->
+        <div id="nav-user-section" class="flex items-center space-x-3">
+          <!-- Populated by JS -->
+        </div>
+      </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
-        <!-- Thống kê tổng quan -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center space-x-4">
-                <div class="p-4 bg-indigo-50 text-indigo-600 rounded-xl">
-                    <i class="fa-solid fa-users text-2xl"></i>
-                </div>
-                <div>
-                    <p class="text-sm text-slate-500 font-medium">Tổng Sinh Viên</p>
-                    <h3 id="statTotalUsers" class="text-2xl font-bold text-slate-800">0</h3>
-                </div>
-            </div>
-
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center space-x-4">
-                <div class="p-4 bg-emerald-50 text-emerald-600 rounded-xl">
-                    <i class="fa-solid fa-[#00ab55] fa-clipboard-check text-2xl"></i>
-                </div>
-                <div>
-                    <p class="text-sm text-slate-500 font-medium">Lượt Bài Làm</p>
-                    <h3 id="statTotalTests" class="text-2xl font-bold text-slate-800">0</h3>
-                </div>
-            </div>
-
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center space-x-4">
-                <div class="p-4 bg-amber-50 text-amber-600 rounded-xl">
-                    <i class="fa-solid fa-chart-line text-2xl"></i>
-                </div>
-                <div>
-                    <p class="text-sm text-slate-500 font-medium">Điểm Trung Bình Tất Cả</p>
-                    <h3 id="statAvgScore" class="text-2xl font-bold text-slate-800">0.0 / 10</h3>
-                </div>
-            </div>
+    <!-- MAIN CONTENT VIEW AREA -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+      
+      <!-- AUTH MODAL / VIEW (IF NOT LOGGED IN OR SWITCHING) -->
+      <section id="auth-view" class="hidden max-w-md mx-auto my-8 bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700">
+        <div class="text-center mb-6">
+          <div class="inline-flex p-3 rounded-2xl bg-sky-100 dark:bg-sky-900/40 text-sky-600 dark:text-sky-400 mb-3">
+            <i class="fa-solid fa-user-lock text-2xl"></i>
+          </div>
+          <h2 id="auth-title" class="text-2xl font-bold">Đăng nhập tài khoản</h2>
+          <p id="auth-subtitle" class="text-sm text-slate-500 dark:text-slate-400 mt-1">Đăng nhập để lưu lịch sử làm bài & kết quả ôn tập</p>
         </div>
 
-        <!-- Thanh công cụ & Tìm kiếm -->
-        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div class="relative flex-1 max-w-md">
-                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                <input type="text" id="searchInput" oninput="renderUserTable()" placeholder="Tìm kiếm theo Tên tài khoản hoặc Họ tên..." class="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm">
+        <form id="auth-form" onsubmit="app.handleAuth(event)" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium mb-1">Tên đăng nhập</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                <i class="fa-regular fa-user"></i>
+              </span>
+              <input type="text" id="auth-username" required placeholder="Nhập tên đăng nhập" class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700/50 focus:outline-none focus:ring-2 focus:ring-sky-500">
             </div>
-            <div class="flex items-center space-x-3">
-                <button onclick="exportCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2">
-                    <i class="fa-solid fa-file-excel"></i> Xuất file CSV / Excel
-                </button>
-                <button onclick="showAddUserModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2">
-                    <i class="fa-solid fa-user-plus"></i> Thêm Sinh Viên
-                </button>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium mb-1">Mật khẩu</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                <i class="fa-solid fa-lock"></i>
+              </span>
+              <input type="password" id="auth-password" required placeholder="Nhập mật khẩu" class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700/50 focus:outline-none focus:ring-2 focus:ring-sky-500">
             </div>
+          </div>
+
+          <div id="auth-error" class="hidden text-xs text-red-500 text-center font-medium"></div>
+
+          <button type="submit" id="auth-submit-btn" class="w-full py-3 bg-gradient-to-r from-sky-500 to-indigo-600 text-white font-semibold rounded-xl shadow-md hover:opacity-95 transition active:scale-[0.98]">
+            Đăng nhập
+          </button>
+        </form>
+
+        <div class="mt-6 text-center text-sm">
+          <span id="auth-toggle-text" class="text-slate-500">Chưa có tài khoản?</span>
+          <button onclick="app.toggleAuthMode()" id="auth-toggle-btn" class="font-semibold text-sky-600 dark:text-sky-400 hover:underline ml-1">
+            Đăng ký ngay
+          </button>
+        </div>
+      </section>
+
+      <!-- HOME DASHBOARD VIEW -->
+      <section id="home-view" class="space-y-8">
+        <!-- Welcome Banner -->
+        <div class="relative overflow-hidden bg-gradient-to-r from-sky-600 to-indigo-700 rounded-3xl p-6 sm:p-10 text-white shadow-xl">
+          <div class="relative z-10 max-w-2xl">
+            <span class="inline-block px-3 py-1 bg-white/20 backdrop-blur rounded-full text-xs font-semibold tracking-wide uppercase mb-3">
+              Kho câu hỏi chuẩn xác 338 câu
+            </span>
+            <h2 class="text-2xl sm:text-4xl font-extrabold leading-tight">Ôn Luyện Trắc Nghiệm Tin Học Đại Cường & Văn Phòng</h2>
+            <p class="mt-2 text-sky-100 text-sm sm:text-base">Gồm 6 Đề thi chi tiết và 1 Đề Tổng Hợp ngẫu nhiên 60 câu giúp rèn luyện kỹ năng làm bài đạt điểm tối đa.</p>
+          </div>
+          <!-- Decorative SVG -->
+          <i class="fa-solid fa-graduation-cap absolute -right-6 -bottom-6 text-9xl text-white/10 rotate-12 pointer-events-none"></i>
         </div>
 
-        <!-- Bảng danh sách Sinh viên -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-slate-50 text-slate-600 text-xs uppercase font-semibold border-b border-slate-200">
-                            <th class="py-4 px-6">Tài Khoản / Tên Sinh Viên</th>
-                            <th class="py-4 px-6">Mật Khẩu</th>
-                            <th class="py-4 px-6 text-center">Số Bài Đã Làm</th>
-                            <th class="py-4 px-6 text-center">Điểm Trung Bình</th>
-                            <th class="py-4 px-6 text-center">Hành Động</th>
-                        </tr>
-                    </thead>
-                    <tbody id="userTableBody" class="divide-y divide-slate-100 text-sm">
-                        <!-- Dữ liệu được load động qua JS -->
-                    </tbody>
-                </table>
-            </div>
+        <!-- User Progress Stats -->
+        <div id="user-stats-card" class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <!-- Filled dynamically -->
         </div>
+
+        <!-- Test Suite Selection Grid -->
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-bold flex items-center gap-2">
+              <i class="fa-solid fa-list-check text-sky-500"></i> Danh sách Bài Test Ôn Luyện
+            </h3>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="test-list-grid">
+            <!-- Cards inserted via JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- QUIZ TAKING VIEW -->
+      <section id="quiz-view" class="hidden space-y-6">
+        <!-- Quiz Header Info -->
+        <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="flex items-center space-x-3 w-full sm:w-auto">
+            <button onclick="app.confirmExitQuiz()" class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300">
+              <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            <div>
+              <h2 id="quiz-title" class="font-bold text-lg sm:text-xl">TEST 1</h2>
+              <p id="quiz-progress-text" class="text-xs text-slate-500">Câu 1 / 60</p>
+            </div>
+          </div>
+
+          <!-- Timer & Stats Badge -->
+          <div class="flex items-center space-x-4 w-full sm:w-auto justify-between sm:justify-end border-t sm:border-0 pt-3 sm:pt-0 border-slate-100 dark:border-slate-700">
+            <div class="flex items-center space-x-2 text-amber-600 dark:text-amber-400 font-semibold text-sm bg-amber-50 dark:bg-amber-950/40 px-3 py-1.5 rounded-xl border border-amber-200 dark:border-amber-800/50">
+              <i class="fa-regular fa-clock"></i>
+              <span id="quiz-timer">00:00</span>
+            </div>
+            <div class="flex items-center space-x-2 text-emerald-600 dark:text-emerald-400 font-semibold text-sm bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1.5 rounded-xl border border-emerald-200 dark:border-emerald-800/50">
+              <i class="fa-solid fa-check"></i>
+              <span id="quiz-score-live">Đúng: 0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Question Navigation Bar (Pill Scroll) -->
+        <div class="bg-white dark:bg-slate-800 p-3 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
+          <div id="quiz-nav-pills" class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1 px-1">
+            <!-- Nav buttons inserted via JS -->
+          </div>
+        </div>
+
+        <!-- Question Box Container -->
+        <div id="quiz-question-card" class="bg-white dark:bg-slate-800 p-5 sm:p-8 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-6">
+          <!-- Question text & badge -->
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span id="question-type-badge" class="px-3 py-1 text-xs font-semibold rounded-full bg-sky-100 text-sky-700 dark:bg-sky-900/50 dark:text-sky-300">
+                Chọn 1 đáp án
+              </span>
+              <span id="question-number-badge" class="text-xs text-slate-400 font-mono">
+                Q1
+              </span>
+            </div>
+            <h3 id="question-text" class="text-base sm:text-lg font-semibold leading-relaxed text-slate-900 dark:text-white">
+              Nội dung câu hỏi...
+            </h3>
+          </div>
+
+          <!-- Answer Choices Grid -->
+          <div id="question-options-list" class="space-y-3">
+            <!-- Options dynamically loaded -->
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-700/60">
+            <button id="btn-prev-q" onclick="app.prevQuestion()" class="px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 text-sm font-medium transition disabled:opacity-40">
+              <i class="fa-solid fa-chevron-left mr-1"></i> Câu trước
+            </button>
+
+            <!-- Instant check button for multiple choice questions if needed -->
+            <button id="btn-check-q" onclick="app.checkAnswer()" class="hidden px-6 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-sm font-semibold shadow-md transition active:scale-95">
+              Xác nhận (Nhiều đáp án)
+            </button>
+
+            <button id="btn-next-q" onclick="app.nextQuestion()" class="px-4 py-2.5 rounded-xl bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-sm font-medium hover:opacity-90 transition">
+              Câu tiếp <i class="fa-solid fa-chevron-right ml-1"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Finish Test Button -->
+        <div class="flex justify-end">
+          <button onclick="app.finishQuiz()" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl shadow-lg transition flex items-center space-x-2">
+            <i class="fa-solid fa-paper-plane"></i>
+            <span>Nộp Bài Kết Thúc Test</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- QUIZ RESULT SUMMARY VIEW -->
+      <section id="result-view" class="hidden max-w-2xl mx-auto space-y-6">
+        <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-700 text-center space-y-6">
+          <div class="inline-flex p-4 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 text-4xl">
+            <i class="fa-solid fa-trophy"></i>
+          </div>
+
+          <div>
+            <h2 class="text-2xl font-extrabold">Hoàn Thành Bài Thi!</h2>
+            <p id="result-test-name" class="text-sm text-slate-500 mt-1">TEST 1</p>
+          </div>
+
+          <div class="grid grid-cols-3 gap-4 p-4 bg-slate-50 dark:bg-slate-700/40 rounded-2xl">
+            <div>
+              <p class="text-xs text-slate-500 uppercase tracking-wider font-medium">Điểm số</p>
+              <p id="result-score" class="text-2xl sm:text-3xl font-black text-sky-600 dark:text-sky-400 mt-1">0 / 10</p>
+            </div>
+            <div>
+              <p class="text-xs text-slate-500 uppercase tracking-wider font-medium">Số câu đúng</p>
+              <p id="result-correct" class="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400 mt-1">0/60</p>
+            </div>
+            <div>
+              <p class="text-xs text-slate-500 uppercase tracking-wider font-medium">Thời gian</p>
+              <p id="result-time" class="text-2xl sm:text-3xl font-black text-amber-600 dark:text-amber-400 mt-1">00:00</p>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row gap-3 justify-center pt-2">
+            <button onclick="app.reviewAnswers()" class="px-6 py-3 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 font-semibold rounded-xl text-sm transition">
+              <i class="fa-solid fa-eye mr-2"></i> Xem lại đáp án
+            </button>
+            <button onclick="app.navToHome()" class="px-6 py-3 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-xl text-sm shadow-md transition">
+              <i class="fa-solid fa-house mr-2"></i> Trở về Trang chủ
+            </button>
+          </div>
+        </div>
+      </section>
+
     </main>
 
-    <!-- Modal Xem Chi Tiết Lịch Sử Làm Bài -->
-    <div id="historyModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[85vh] flex flex-col shadow-xl border border-slate-200">
-            <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50 rounded-t-2xl">
-                <div>
-                    <h3 id="modalUserName" class="text-lg font-bold text-slate-800">Lịch sử làm bài: Nguyễn Văn A</h3>
-                    <p class="text-xs text-slate-500">Chi tiết tất cả bài test sinh viên đã tham gia</p>
+    <!-- FOOTER -->
+    <footer class="mt-auto border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-6 text-center text-xs text-slate-500">
+      <div class="max-w-7xl mx-auto px-4">
+        <p>© 2026 Ứng Dụng Ôn Luyện Tin Học Đại Cường - Tối ưu cho Máy tính & Điện thoại Mobile</p>
+      </div>
+    </footer>
+  </div>
+
+  <!-- SCRIPT DATA & APP LOGIC -->
+  <script>
+    // COMPLETE QUIZ DATABASE EXTRACTED FROM PDFS
+    const RAW_TEST_DATA = {
+      test1: [
+        { id: 1, type: 'single', q: 'Hầu hết các máy tính sử dụng bộ nhớ flash để:', options: ['Kết nối và cổng', '2 loại SOF bộ nhớ cache.', 'Bộ nhớ flash.', 'lưu giữ các chi lệnh khởi đầu vì nó cho phép các máy tính dễ dàng để cập nhật nội dung của nó.'], correct: [3] },
+        { id: 2, type: 'single', q: 'Bộ xử lý của máy tính làm gì?', options: ['A. Lưu trữ các dữ liệu của bạn dưới các hình thức của các tập tin và thư mục', 'B. Thực thi các câu lệnh được truyển đi bởi các phần mềm bạn chạy', 'C. Xử lý và tạo ra những hình ảnh được hiển thị bằng máy tính của bạn', 'D. Kết nối máy tính vào mạng'], correct: [2] },
+        { id: 3, type: 'single', q: '.......... là một phần của giao diện đồ họa (GUI) trong Windows. Cho phép người dùng thiết lập hệ thống bằng cách thêm phần cứng mới, gỡ bỏ chương trình, chỉnh sửa tài khoản...', options: ['Control panel', 'Windows Explorer', 'Action Center', 'Phần mềm người dùng'], correct: [0] },
+        { id: 4, type: 'single', q: '......là một ngôn ngữ được sử dụng bởi các máy tính để giao tiếp, trao đổi thông tin với nhau qua việc sử dụng hệ thống mạng?', options: ['máy chủ(server)', 'trình duyệt(browser)', 'giao thức(protocol)', 'công cụ tìm kiếm(search engine)'], correct: [2] },
+        { id: 5, type: 'single', q: 'Các phím tắt cho các lệnh Copy là gì?', options: ['A. Ctrl+V', 'B. Ctrl+Z', 'C. Alt+F4', 'D. Ctrl+C'], correct: [3] },
+        { id: 6, type: 'single', q: 'Firmware là gì?', options: ['A. Driver (phần mềm điều khiển thiết bị ngoại vi)', 'B. Hệ điều hành', 'C. Phần mềm đầu tiên chạy trên thiết bị phần cứng khi nó được bật lên', 'D. Trình duyệt web'], correct: [2] },
+        { id: 7, type: 'single', q: 'WWW là viết tắt của:', options: ['A. Wild Wild West', 'B. World Wide WAN', 'C. World Wide Web', 'D. World Wide Fund for Nature'], correct: [2] },
+        { id: 8, type: 'single', q: 'Lựa chọn nào sau đây là ví dụ về một URL?', options: ['A. john.smith@email.com', 'B. #twitter', 'C. Instagram', 'D. http://www.microsoft.com'], correct: [3] },
+        { id: 9, type: 'single', q: 'Chương trình nào sau đây là một ví dụ của trình duyệt web?', options: ['A. Internet Explorer', 'B. Skype', 'C. OneDrive', 'D. Microsoft Word'], correct: [0] },
+        { id: 10, type: 'single', q: 'LAN đại diện cho:', options: ['A. Local area network (mạng cục bộ)', 'B. Wide area network (mạng diện rộng)', 'C. Legal area network (mạng diện pháp lý)', 'D. Local area nature (tính chất khu vực địa phương)'], correct: [0] },
+        { id: 11, type: 'single', q: 'Lựa chọn nào sau đây là một ví dụ về một mạng WAN?', options: ['A. Các mạng trong nhà của bạn', 'B. FTP', 'C. Các mạng trong tòa nhà văn phòng của bạn', 'D. Internet'], correct: [3] },
+        { id: 12, type: 'single', q: 'Lệnh nào sau đây mà bạn có thể sử dụng để kiểm tra kết nối giữa hai thiết bị trên mạng?', options: ['A. ping', 'B. FTP', 'C. ipconfig', 'D. Google'], correct: [0] },
+        { id: 13, type: 'single', q: 'Lựa chọn nào sau đây là ví dụ về một địa chỉ email?', options: ['A. http://www.microsoft.com', 'B. #hashtag', 'C. Instagram', 'D. John.Smith@example.com'], correct: [3] },
+        { id: 14, type: 'single', q: 'Những ứng dụng nào sau bạn có thể sử dụng để thực hiện cuộc gọi để truyền âm thanh và video trên Internet?', options: ['A. Bing', 'B. FTP', 'C. Skype', 'D. Google'], correct: [2] },
+        { id: 15, type: 'single', q: 'Lựa chọn nào sau đây là hệ điều hành?', options: ['A. Bing', 'B. Facebook', 'C. Android', 'D. Skype'], correct: [2] },
+        { id: 16, type: 'multiple', q: 'Internet là gì? (Chọn tất cả các câu đúng.)', options: ['A. Một mạng với nhiều máy tính và các thiết bị', 'B. Các mạng vật lý của máy tính và các thiết bị trên khắp thế giới', 'C. Mỗi website và trang web trên thế giới', 'D. Các mạng toàn cầu kết nối với nhau mà sử dụng giao thức truyền thông theo một tiêu chuẩn'], correct: [1, 3] },
+        { id: 17, type: 'multiple', q: 'URL là gì? (Chọn tất cả áp dụng.)', options: ['A. Địa chỉ của một Website hoặc một trang web trên WWW', 'B. Uniform Resource Locator', 'C. Các vị trí mạng của một máy tính', 'D. Địa chỉ của một máy chủ web (WebServer)'], correct: [0, 1] },
+        { id: 18, type: 'multiple', q: 'Trình duyệt web là gì? (Chọn tất cả áp dụng.)', options: ['A. Một ứng dụng mà bạn có thể sử dụng để truy cập Internet', 'B. Phần mềm được sử dụng để duyệt các website và các trang web trên World Wide Web.', 'C. Một ứng dụng để gửi email', 'D. Một ứng dụng sẽ hiển thị một trang web trên máy tính hoặc thiết bị di động'], correct: [1, 3] },
+        { id: 19, type: 'multiple', q: 'Kiểu bộ nhớ nào sau đây là bộ nhớ không bị mất dữ liệu khi tắt điện? (Chọn tất cả áp dụng.)', options: ['A. SSD', 'B. RAM', 'C. DVD', 'D. Ổ đĩa flash USB'], correct: [0, 2, 3] },
+        { id: 20, type: 'multiple', q: 'Những thành phần phần cứng nào sau đây là thiết bị ngoại vi của máy tính để bàn? (Chọn tất cả áp dụng.)', options: ['A. SSD', 'B. Loa', 'C. Webcam', 'D. Card âm thanh'], correct: [1, 2] },
+        { id: 21, type: 'multiple', q: 'Những thiết bị nào sau đây được xem là thiết bị xuất? (Chọn tất cả áp dụng.)', options: ['A. Màn hình', 'B. Loa', 'C. Microphone', 'D. Bàn phím'], correct: [0, 1] },
+        { id: 22, type: 'single', q: 'Những loại máy tính nào sau đây có phần cứng rất mạnh và được sử dụng để cung cấp các dịch vụ chuyên nghiệp?', options: ['A. Máy Tính Xách Tay', 'B. Máy tính bảng', 'C. Điện thoại thông minh', 'D. Máy chủ'], correct: [3] },
+        { id: 23, type: 'single', q: 'Những yêu cầu hệ thống cho bạn biết điều gì?', options: ['A. Cấu hình phần cứng tối đa', 'B. Cấu hình phần cứng tối thiểu và tài nguyên phần mềm khác cần để chạy một ứng dụng', 'C. Cấu hình tốt nhất nên có', 'D. Cấu hình phần mềm tối thiểu'], correct: [1] },
+        { id: 24, type: 'multiple', q: 'Lựa chọn nào sau đây là đặc điểm của các hệ điều hành hiện đại? (Chọn tất cả áp dụng.)', options: ['A. Thời gian thực.', 'B. Đa nhiệm.', 'C. Không thể học được.', 'D. Có thể sử dụng thời gian hạn chế.'], correct: [0, 1] },
+        { id: 25, type: 'multiple', q: 'Bạn thường có thể tùy chỉnh những gì khi cài đặt một ứng dụng? (Chọn tất cả áp dụng.)', options: ['A. Thư mục cài đặt', 'B. EULA', 'C. Khi loại bỏ ứng dụng', 'D. Shortcut nào được cài đặt'], correct: [0, 3] },
+        { id: 26, type: 'multiple', q: 'BIOS là gì? (Chọn tất cả áp dụng.)', options: ['A. Firmware với giao diện người dùng', 'B. Phần mềm chạy khi OS khởi động', 'C. Firmware phụ trách việc khởi tạo và kiểm tra phần cứng', 'D. Hệ thống xuất nhập cơ bản'], correct: [0, 2, 3] },
+        { id: 27, type: 'multiple', q: 'Tại sao bạn nên sao lưu dữ liệu của bạn? (Chọn tất cả áp dụng.)', options: ['A. Để mất nó khi máy hỏng', 'B. Để có thể khôi phục lại khi máy tính bị hỏng', 'C. Để có thể khôi phục lại khi máy tính bị mất cắp', 'D. Để lưu trữ trên đĩa hư'], correct: [1, 2] },
+        { id: 28, type: 'single', q: 'Dùng toán tử tìm kiếm "site:" để làm gì?', options: ['A. Có kết quả về chủ đề nhất định', 'B. Có kết quả từ một trang web hoặc tên miền nhất định', 'C. Loại trừ trang web', 'D. Tìm giá cả'], correct: [1] },
+        { id: 29, type: 'multiple', q: 'Lựa chọn nào sau đây là đặc điểm của một quảng cáo banner? (Chọn tất cả áp dụng.)', options: ['A. Một quảng cáo được nhúng vào một trang web', 'B. Nhúng vào phần mềm offline', 'C. Một công cụ để thu hút nhiều lượt truy cập đến trang web', 'D. Công cụ giảm truy cập'], correct: [0, 2] },
+        { id: 30, type: 'multiple', q: 'Những ký tự nào sau đây có thể được sử dụng để thực hiện tìm kiếm trên Google? (Chọn tất cả áp dụng.)', options: ['A. $', 'B. @', 'C. #', 'D. ""'], correct: [0, 3] },
+        { id: 31, type: 'single', q: 'Việc sử dụng đúng dấu * (dấu sao) khi tìm kiếm trên Google hay Bing có ý nghĩa gì?', options: ['A. Tìm giá', 'B. Đặt trong ngoặc kép', 'C. Thêm nó như là một đại diện cho bất kỳ nội dung chưa biết', 'D. Tìm xu hướng Twitter'], correct: [2] },
+        { id: 32, type: 'multiple', q: 'Lựa chọn nào sau đây là công cụ tìm kiếm? (Chọn tất cả áp dụng.)', options: ['A. Facebook', 'B. Google', 'C. Bing', 'D. Yahoo!'], correct: [1, 2, 3] },
+        { id: 33, type: 'multiple', q: 'Lựa chọn nào sau đây là công cụ tìm kiếm? (Chọn tất cả áp dụng.)', options: ['A. Facebook', 'B. Google', 'C. Bing', 'D. Yahoo!'], correct: [1, 2, 3] },
+        { id: 34, type: 'multiple', q: 'Những thông tin nào sau đây được hiển thị cho mỗi kết quả tìm kiếm khi tìm kiếm trên Google hay Bing?', options: ['A. Các tiêu đề', 'B. Các màu', 'C. Các URL', 'D. Các mô tả'], correct: [0, 2, 3] },
+        { id: 35, type: 'single', q: 'Một hệ điều hành nắm giữ các thông tin từ Clipboard trong bao lâu?', options: ['A. Cho đến khi cập nhật OS', 'B. Cho đến khi nhấn Alt+F4', 'C. Cho đến khi dùng search engine', 'D. Cho đến khi bạn sử dụng lệnh Paste mới / sao chép mới'], correct: [3] },
+        { id: 36, type: 'single', q: 'Lựa chọn nào sau đây là ví dụ của các mật khẩu mạnh?', options: ['A. 1234567', 'B. hellokitty', 'C. H3LI0K1ttY', 'D. Th1s1 $ Year2015'], correct: [3] },
+        { id: 37, type: 'single', q: 'Lệnh nào sau đây được sử dụng để hiển thị tất cả các cấu hình IP trên hệ thống Windows?', options: ['A. ipconfig', 'B. tracert', 'C. ipconfig /all', 'D. ping'], correct: [2] },
+        { id: 38, type: 'single', q: 'Các chức năng của một VPN là gì?', options: ['A. Bảo vệ mạng khác', 'B. Mã hóa gói tin nhận', 'C. Mã hóa gói tin gửi', 'D. Tạo một kết nối point-to-point trên mạng công cộng'], correct: [3] },
+        { id: 39, type: 'single', q: 'Bộ định tuyến không dây mới, lựa chọn nào cung cấp bảo mật cao nhất?', options: ['A. TCP/IP', 'B. WPA', 'C. WEP', 'D. WPA2'], correct: [3] },
+        { id: 40, type: 'multiple', q: 'Lựa chọn nào sau đây là tiêu chuẩn hợp lệ của 802.11? (Chọn tất cả áp dụng)', options: ['A. 802.11ac', 'B. 802.11cd', 'C. 802.11t', 'D. 802.11n'], correct: [0, 3] },
+        { id: 41, type: 'single', q: 'Một khóa chính phải:', options: ['A) Có giá trị duy nhất', 'B) Không được rỗng', 'C) Xác định duy nhất mẫu tin', 'D) Có giá trị duy nhất (không trùng nhau); không được rỗng; xác định duy nhất một mẫu tin'], correct: [3] },
+        { id: 42, type: 'single', q: 'Khi tạo ra các bảng trong cơ sở dữ liệu Access thì ta nên thực hiện theo trình tự:', options: ['A) Tạo liên kết, tạo khóa chính, nhập liệu', 'B) Tạo khóa chính, tạo liên kết, nhập liệu', 'C) Tạo khóa chính, nhập liệu, liên kết', 'D) Nhập liệu, tạo khóa chính, liên kết'], correct: [1] },
+        { id: 43, type: 'single', q: 'Muốn thiết lập quan hệ giữa các bảng trong Access, ta thực hiện lệnh:', options: ['A) Edit Tool...', 'B) Insert\\Relationships', 'C) View Relationships', 'D) Tool\\Relationships'], correct: [3] },
+        { id: 44, type: 'single', q: 'Để lấy dữ liệu từ bảng "Phatsinh" thêm vào cuối bảng "Chungtu", ta dùng:', options: ['A) Update Query', 'B) Make-Table Query', 'C) Append Query', 'D) Select Query'], correct: [2] },
+        { id: 45, type: 'single', q: 'Trong quá trình thiết lập quan hệ giữa các bảng, để kiểm tra ràng buộc toàn vẹn về phụ thuộc tồn tại ta chọn:', options: ['A) Enforce Referential Integrity', 'B) Cascade Update Related Fields', 'C) Cascade Delete Related Record', 'D) Primary Key'], correct: [0] },
+        { id: 46, type: 'single', q: 'Windows Update là gì?', options: ['A. Công cụ cập nhật Android', 'B. Virus Windows', 'C. Công cụ để giữ Windows cập nhật', 'D. Công cụ khôi phục dữ liệu'], correct: [2] },
+        { id: 47, type: 'single', q: 'Quy định nhập kiểu Text tự động đối thành chữ thường sử dụng mã Format là:', options: ['A) >', 'B) <', 'C) @', 'D) !'], correct: [1] },
+        { id: 48, type: 'single', q: 'Giả sử hai bảng có quan hệ 1-n, muốn xóa mẫu tin trên bảng cha sao cho mẫu tin tương ứng bảng con tự xóa theo:', options: ['A) Cascade Update Related Fields', 'B) Enforce Referential Integrity', 'C) Không thực hiện được', 'D) Cascade Delete Related Records'], correct: [3] },
+        { id: 49, type: 'single', q: 'Muốn tạo ra bảng với dữ liệu nguồn lấy từ những Table hoặc Query, ta sử dụng loại Query nào?', options: ['A) Update Query', 'B) Make Table Query', 'C) Append Query', 'D) Select Query'], correct: [1] },
+        { id: 50, type: 'single', q: 'Muốn thay đổi đồng loạt một giá trị nào đó trong Field thành giá trị khác, chọn cách nào thích hợp nhất:', options: ['A) Dùng Make Table Query', 'B) Dùng Update Query', 'C) Mở Table sửa thủ công', 'D) Dùng Append Query'], correct: [1] },
+        { id: 51, type: 'single', q: 'Đơn vị đo lường nào sau đây bạn sử dụng để đo dung lượng lưu trữ trên đĩa cứng?', options: ['A. GHz', 'B. GB', 'C. Số lượng lõi', 'D. SSD'], correct: [1] },
+        { id: 52, type: 'single', q: 'Mã nguồn mở là gì?', options: ['A. Bản quyền thương mại', 'B. Phần cứng', 'C. Một loại bản quyền phần mềm', 'D. Trình duyệt web'], correct: [2] },
+        { id: 53, type: 'single', q: 'Chương trình nào bạn có thể sử dụng để xem các ứng dụng đang chạy trên máy tính Windows?', options: ['A. Windows Update', 'B. Windows Media Player', 'C. Task Manager', 'D. Control Panel'], correct: [2] },
+        { id: 54, type: 'single', q: 'Những chương trình nào sau đây bạn có thể sử dụng để xem các ứng dụng đang chạy trên Windows?', options: ['A. Windows Update', 'B. Windows Media Player', 'C. Task Manager', 'D. Control Panel'], correct: [2] },
+        { id: 55, type: 'single', q: 'Adapter chuyển đổi dữ liệu xuất của máy tính thành tín hiệu video hiển thị hình ảnh gọi là:', options: ['Bo mạch chủ', 'Card video', 'Cổng USB', 'Card điều hợp'], correct: [1] },
+        { id: 56, type: 'multiple', q: 'Ba đối tượng trong cơ sở dữ liệu Access 2010?', options: ['Report', 'SQL', 'Table', 'Query'], correct: [0, 2, 3] },
+        { id: 57, type: 'single', q: 'Ba nút mặc định trên Quick Access Toolbar trước khi tùy biến là:', options: ['Print, Undo, Redo', 'Undo, Redo, Save', 'New, Undo, Save', 'Open, Save, Redo'], correct: [1] },
+        { id: 58, type: 'multiple', q: 'Bạn cần rời khỏi máy tính vài phút và muốn bảo vệ nó không cần đóng ứng dụng:', options: ['Switch User', 'Lock', 'Shut down', 'Log off'], correct: [0, 1] },
+        { id: 59, type: 'single', q: 'Bạn chèn đĩa CD driver vào máy, xuất hiện thông báo lỗi. Nguyên nhân là gì?', options: ['Pin máy yếu', 'Không đủ bộ nhớ', 'Bạn đặt đĩa vào khay không đúng chiều', 'Đĩa chứa nhiều tập tin'], correct: [2] },
+        { id: 60, type: 'single', q: 'Bạn có thể dùng công cụ gì để đóng các ứng dụng khi máy tính bị đứng không chạy được nữa?', options: ['Microsoft Word', 'Microsoft Security Essentials', 'Task Manager', 'Windows Defender'], correct: [2] }
+      ],
+      test2: [
+        { id: 1, type: 'single', q: 'Bạn có thể loại bỏ các ứng dụng cài đặt từ đâu?', options: ['Start -> Control Panel -> Uninstall A Program', 'Start -> Default Programs', 'Start -> Control Panel -> Programs', 'Start -> Control Panel -> System And Security'], correct: [0] },
+        { id: 2, type: 'single', q: 'Bạn có thể nói gì về một đối tượng đã được lựa chọn trong tài liệu?', options: ['Hiển thị trong cửa sổ riêng', 'Đánh dấu nổi bật', 'Chuyển sang trắng đen', 'Tám ô vuông nhỏ xuất hiện xung quanh đối tượng'], correct: [3] },
+        { id: 3, type: 'single', q: 'Công cụ kiểm tra xem ứng dụng tương thích phiên bản Windows:', options: ['Safe Mode', 'Compatibility Mode', 'Windows Compatibility Center', 'Microsoft Fix It'], correct: [2] },
+        { id: 4, type: 'single', q: 'Đang chơi game hình ảnh không hiển thị chính xác và bị đóng băng. Thành phần lỗi:', options: ['Bo mạch chủ', 'Card đồ họa', 'Thiết bị nhập', 'Card âm thanh'], correct: [1] },
+        { id: 5, type: 'multiple', q: 'Tiêu chuẩn hợp lệ của 802.11:', options: ['802.11t', '802.11cd', '802.11n', '802.11ac'], correct: [2, 3] },
+        { id: 6, type: 'single', q: 'Trong Windows 7 để thay đổi hình nền Desktop:', options: ['Start, Control Panel, Appearance And Personalization -> Personalization', 'Clock, Language Region', 'Display', 'Desktop Gadgets'], correct: [0] },
+        { id: 7, type: 'multiple', q: 'Muốn di chuyển một thư mục vào vị trí khác, 2 lệnh là:', options: ['Copy', 'Paste', 'Cut', 'Move'], correct: [1, 2] },
+        { id: 8, type: 'single', q: 'Task Manager xem RAM và lịch sử sử dụng tại mục:', options: ['Services', 'Resource Monitor', 'Processes', 'Performance'], correct: [3] },
+        { id: 9, type: 'multiple', q: 'Nên đặt màn hình máy tính như thế nào?', options: ['Ngang tầm mắt', 'Rộng 20 inch trở lên, vị trí trên cùng trên tầm mắt 3 inch', 'Cách ít nhất 20 inch từ mắt', 'Trực tiếp trên bàn'], correct: [0, 1, 2] },
+        { id: 10, type: 'multiple', q: 'Kiểm tra gì trước khi cài driver cho phần cứng?', options: ['Phát hành trong 30 ngày', 'Đúng phần cứng đang sử dụng', 'Tạo bởi đúng nhà sản xuất', 'Tương thích đúng phiên bản OS'], correct: [1, 3] },
+        { id: 11, type: 'single', q: 'Tùy chỉnh khi cài đặt ứng dụng:', options: ['EULA', 'Thư mục cài đặt', 'Khi loại bỏ ứng dụng', 'Shortcut cài đặt'], correct: [1] },
+        { id: 12, type: 'single', q: 'Router không dây bảo mật cao nhất:', options: ['WPA2', 'WPA', 'WEP', 'TCP/IP'], correct: [0] },
+        { id: 13, type: 'single', q: 'Bảng mạch nhỏ mà chip RAM được tổ chức trong khe cắm:', options: ['Chu kỳ', 'Bộ nhớ', 'Các mô-đun bộ nhớ', 'Đồng hồ ngoại vi'], correct: [2] },
+        { id: 14, type: 'single', q: 'Thành phần phần cứng truyền tải thông tin ra ngoài:', options: ['a. Thiết bị đầu ra', 'b. Thiết bị đầu vào', 'c. Thiết bị trở', 'd. Con trỏ'], correct: [0] },
+        { id: 15, type: 'single', q: 'BCC có ý nghĩa gì khi soạn email?', options: ['Hiển thị tất cả người nhận', 'Bản sao bí mật người gửi', 'Bản sao nội dung', 'Người nhận trong BCC nhận bản sao nhưng không hiển thị danh tính cho người khác'], correct: [3] },
+        { id: 16, type: 'single', q: 'Biên dịch và thực hiện các lệnh cơ bản:', options: ['SCSI', 'Xử lý', 'Thẻ PC', 'PCI bus'], correct: [1] },
+        { id: 17, type: 'single', q: 'BIOS của máy tính là một ........ chứa thủ tục mức thấp nhất:', options: ['Socket', 'Memory', 'Firmware', 'Slot'], correct: [2] },
+        { id: 18, type: 'multiple', q: 'BIOS là gì?', options: ['Hệ thống xuất nhập cơ bản', 'Firmware với giao diện người dùng', 'Firmware phụ trách khởi tạo kiểm tra phần cứng', 'Phần mềm chạy khi OS khởi động'], correct: [0, 1, 2] },
+        { id: 19, type: 'single', q: 'Bộ xử lý của máy tính làm gì?', options: ['Kết nối mạng', 'Lưu trữ tập tin', 'Thực thi câu lệnh', 'Xử lý và tạo ra những hình ảnh hiển thị'], correct: [3] },
+        { id: 20, type: 'single', q: 'Chức năng của VPN:', options: ['Mã hóa gói gửi nhận', 'Tạo một kết nối point-to-point trên mạng công cộng', 'Bảo vệ mạng', 'Mã hóa gói nhận gửi'], correct: [1] },
+        { id: 21, type: 'single', q: 'Chương trình mở rộng khả năng trình duyệt web:', options: ['Add-in', 'Extend', 'Update', 'Plug-ins'], correct: [3] },
+        { id: 22, type: 'single', q: 'Phần mềm gây ra hiệu suất máy tính không mong muốn:', options: ['Registerware', 'Malware', 'Shareware', 'Careware'], correct: [1] },
+        { id: 23, type: 'single', q: 'Phần mềm gây ra hiệu suất máy tính không mong muốn:', options: ['Registerware', 'Shareware', 'Careware', 'Malware'], correct: [3] },
+        { id: 24, type: 'single', q: 'Phím tắt xóa tập tin được chọn:', options: ['Ctrl + C', 'Alt + Tab', 'Del', 'Shift'], correct: [2] },
+        { id: 25, type: 'single', q: 'Phím tắt Copy:', options: ['Alt + F4', 'Ctrl + Z', 'Ctrl + V', 'Ctrl + C'], correct: [3] },
+        { id: 26, type: 'single', q: 'Tùy chọn KHÔNG phải là ví dụ của Ribbon:', options: ['Home', 'Insert', 'Clipboard', 'Review'], correct: [2] },
+        { id: 27, type: 'single', q: 'Cách khởi động Microsoft Excel:', options: ['Start -> Programs -> Excel', 'Click Start, All Programs, Microsoft Office, Microsoft Excel 2010', 'Start -> Excel 2010', 'Start -> Office -> Excel'], correct: [1] },
+        { id: 28, type: 'multiple', q: 'Loại bỏ hoàn toàn tập tin không thể phục hồi:', options: ['CCleaner / File Shredder xóa đĩa trống', 'Shift + Delete', 'Shift + Delete và ghi đè nhiều lần', 'Làm rỗng Recycle Bin'], correct: [0, 2] },
+        { id: 29, type: 'single', q: 'Câu nào đúng về chức năng Undo?', options: ['Hủy bỏ hành động vừa thực hiện', 'Lặp lại lệnh', 'Lưu file', 'Đóng ứng dụng'], correct: [0] },
+        { id: 30, type: 'single', q: 'Chế độ hiển thị áp dụng cho văn bản nhận từ email:', options: ['Protected View', 'Read Only View', 'Web Layout View', 'Full Screen'], correct: [0] },
+        { id: 31, type: 'single', q: 'Nhiệm vụ của hệ điều hành:', options: ['Diệt virus', 'Tạo bảng tính', 'Quản lý thư điện tử', 'Quản lý tiến trình'], correct: [3] },
+        { id: 32, type: 'single', q: 'Chip ROM chứa dữ liệu văn bản vĩnh viễn là:', options: ['Kỹ thuật số', 'PC thẻ', 'Firmware', 'AMD'], correct: [2] },
+        { id: 33, type: 'single', q: 'Chip với 2 nhân xử lý riêng biệt:', options: ['Yếu tố hình thức', 'Xử lý lõi kép', 'Bộ vi xử lý đa lõi', 'Xử lý'], correct: [1] },
+        { id: 34, type: 'single', q: 'Phần mở rộng của Microsoft Access:', options: ['*.accdb', '*.pptx', '*.doc', '*.xlsx'], correct: [0] },
+        { id: 35, type: 'single', q: 'Phần mở rộng của Microsoft Excel:', options: ['*.doc', '*.xlsx', '*.accdb', '*.pptx'], correct: [1] },
+        { id: 36, type: 'single', q: 'Phần mở rộng của Microsoft PowerPoint:', options: ['*.xlsx', '*.accdb', '*.doc', '*.pptx'], correct: [3] },
+        { id: 37, type: 'single', q: 'Phần mở rộng của Microsoft Word:', options: ['*.pptx', '*.doc, .docx', '*.xlsx', '*.accdb'], correct: [1] },
+        { id: 38, type: 'single', q: 'Ý nghĩa của Format Painter trong Word 2010:', options: ['Sao chép đối tượng', 'Sao chép tất cả định dạng của một phần/đối tượng', 'Tô màu khối', 'Xóa định dạng'], correct: [1] },
+        { id: 39, type: 'multiple', q: '4 loại hiệu ứng trong tab Animation PowerPoint:', options: ['Fast', 'Slow', 'Motion Paths', 'Entrance', 'Emphasis', 'Exit'], correct: [2, 3, 4, 5] },
+        { id: 40, type: 'single', q: 'Sử dụng mẫu thiết kế (themes) trong PowerPoint:', options: ['Chỉ dùng thư viện', 'Không dùng bên ngoài', 'Tạo mới chỉ dùng cho slide đang mở', 'Người dùng có thể tạo ra một số themes mới và áp dụng trên nhiều bản trình chiếu.'], correct: [3] },
+        { id: 41, type: 'single', q: 'Trạng thái tiết kiệm điện năng nhất, lưu lại tập tin và tắt máy:', options: ['Block', 'Battery Saver', 'Hybrid sleep', 'Hibernation'], correct: [3] },
+        { id: 42, type: 'single', q: 'Chuẩn mạng xác định không có máy tính trung tâm:', options: ['Chuẩn Ethernet (Ethernet)', 'server', 'Latency', 'T1 line'], correct: [0] },
+        { id: 43, type: 'single', q: 'Chức năng tùy chỉnh khoảng cách giữa các đoạn trong Word 2010:', options: ['Character spacing', 'Spacing', 'Option spacing', 'Toolbar'], correct: [1] },
+        { id: 44, type: 'single', q: 'Chương trình là ví dụ trình duyệt web:', options: ['Internet Explorer', 'Microsoft Word', 'Skype', 'OneDrive'], correct: [0] },
+        { id: 45, type: 'single', q: 'Chuột phát cảm biến ánh sáng quang học/laser:', options: ['a. Chuột quang', 'b. Bút', 'c. Chuột laser', 'd. Bút kỹ thuật số'], correct: [0] },
+        { id: 46, type: 'single', q: 'Đại diện cho gần như tất cả ngôn ngữ chữ viết thế giới:', options: ['Bộ mã hoá Unicode', 'Hệ thống hoạt động', 'Giải mã', 'Đồng hồ tăng tốc'], correct: [0] },
+        { id: 47, type: 'single', q: 'Có những loại phần mềm nào?', options: ['Tất cả đều đúng', 'Mã nguồn mở & công cộng', 'Phần mềm đi kèm & cao cấp', 'Chia sẻ & miễn phí'], correct: [0] },
+        { id: 48, type: 'single', q: 'Xem chính xác báo cáo trông như thế nào khi in:', options: ['Page Layout', 'Chỉ in mới biết', 'View Normal', 'Print preview'], correct: [3] },
+        { id: 49, type: 'single', q: 'Cổng eSATA kết nối đĩa chuẩn SATA gắn ngoài:', options: ['Cổng USB', 'USB 3.0', 'Cổng eSATA', 'Card màn hình'], correct: [2] },
+        { id: 50, type: 'single', q: 'Công nghệ máy tính đọc ký tự từ tài liệu thông thường:', options: ['a. Nhận dạng ký tự quang học (OCR)', 'b. Nhận dạng giọng nói', 'c. Bảng tương tác', 'd. ATM'], correct: [0] },
+        { id: 51, type: 'single', q: 'Công nghệ cho phép truy cập Internet ở bất cứ đâu:', options: ['ISDN', 'cellular', 'ADSL', 'VPN'], correct: [1] },
+        { id: 52, type: 'single', q: 'Dạng view thiết kế slide trong PowerPoint 2010:', options: ['List', 'Normal', 'Slide show', 'Grid'], correct: [1] },
+        { id: 53, type: 'single', q: 'Dòng Intel Core:', options: ['Kết nối nam cổng', 'Lõi xử lý', 'Người tính', 'Máy tính cá nhân hiệu suất cao hiện nay có thể sử dụng một bộ xử lý trong'], correct: [3] },
+        { id: 54, type: 'single', q: 'Dữ liệu đã được chế biến thành hình thức hữu ích:', options: ['a. Chuột', 'b. Dữ liệu đầu ra', 'c. Cảm ứng', 'd. Bút'], correct: [1] },
+        { id: 55, type: 'single', q: 'Dual-core và quad-core:', options: ['2 bộ vi xử lý đa lõi chung', 'Bộ xử lý đa lõi', 'Bộ vi xử lý đa lõi', 'Vi xử lý quad-core'], correct: [0] },
+        { id: 56, type: 'single', q: 'Dùng toán tử "site:" để:', options: ['Có kết quả chủ đề', 'Giá tên miền', 'Có kết quả từ một trang web hoặc tên miền nhất định', 'Không bao gồm trang web'], correct: [2] },
+        { id: 57, type: 'single', q: 'Đặc điểm chính VoIP:', options: ['Phụ thuộc mạng', 'Chỉ phần mềm', 'Không trả thêm bất kỳ một khoảng chi phí nào', 'Phụ thuộc phần cứng'], correct: [2] },
+        { id: 58, type: 'single', q: 'Đặc điểm chính của virus:', options: ['Giám sát webcam', 'Nó có thể làm hỏng dữ liệu trên máy tính của bạn.', 'Tự sao chép không đồng ý', 'Đăng nhập tự động'], correct: [1] },
+        { id: 59, type: 'single', q: 'Công cụ tìm kiếm phân cấp:', options: ['Giới hạn tìm kiếm', 'Công cụ tìm kiếm phân cấp đi qua các trang web và biên dịch thông tin về nội dung', 'Cấm kết quả tài trợ', 'Cập nhật 2 lần/tháng'], correct: [1] },
+        { id: 60, type: 'single', q: 'Đầu đọc quang học đọc mã vạch:', options: ['a. MICR', 'b. Touchscreen', 'c. RFID', 'd. Máy quét mã vạch'], correct: [3] }
+      ],
+      test3: [
+        { id: 1, type: 'single', q: 'Đâu là hệ điều hành đơn người sử dụng (single user)?', options: ['Windows Vista', 'Unix/Linux', 'Windows XP', 'MS-DOS'], correct: [3] },
+        { id: 2, type: 'single', q: 'Đâu là thiết bị lưu trữ dữ liệu?', options: ['DRAM', 'CCD', 'HDD', 'OSRAM'], correct: [2] },
+        { id: 3, type: 'single', q: 'Đâu là thiết bị nhập?', options: ['Bàn phím, chuột, chuột cảm ứng', 'Màn hình, máy in', 'Ổ cứng, chip, RAM', 'Không có đáp án đúng'], correct: [0] },
+        { id: 4, type: 'single', q: 'Đâu là thiết bị vừa nhập, vừa xuất?', options: ['Màn hình, máy in', 'Ổ cứng, chip, RAM', 'Màn hình cảm ứng', 'Bàn phím, chuột'], correct: [2] },
+        { id: 5, type: 'single', q: 'Đâu là thiết bị xuất?', options: ['Ổ cứng, chip', 'Tất cả đều sai', 'Màn hình, máy in', 'Bàn phím, chuột'], correct: [2] },
+        { id: 6, type: 'single', q: 'Đề cập đến một chip vi xử lý máy tính cá nhân:', options: ['Xử lý đa lõi', 'Khe cắm bộ nhớ', 'Bộ vi xử lý.', 'FireWire'], correct: [2] },
+        { id: 7, type: 'single', q: 'Để sắp xếp và lọc dữ liệu trong Excel ta dùng:', options: ['Find and Filter', 'Find and replace', 'Sort and Filter', 'Data Filter'], correct: [2] },
+        { id: 8, type: 'single', q: 'Xem các chương trình đã cài đặt từ nút Start:', options: ['Documents', 'All Programs', 'Quick Start', 'Search'], correct: [1] },
+        { id: 9, type: 'multiple', q: 'Điều gì xảy ra khi bạn chọn file và nhấn phím Delete?', options: ['Xóa vĩnh viễn', 'Các tập tin được đưa vào Recycle Bin', 'Không thể phục hồi', 'Các tập tin vẫn còn trên đĩa cứng chiếm không gian đĩa'], correct: [1, 3] },
+        { id: 10, type: 'single', q: 'Điều gì xảy ra khi nhấn Ctrl+N trong Office?', options: ['Một phiên làm việc mới của chương trình được bắt đầu', 'Màn hình tạo file', 'Màn hình lưu', 'Tập tin trắng'], correct: [0] },
+        { id: 11, type: 'single', q: 'Nút Reply All trả lời email khác gì Reply?', options: ['Trả lời cho tất cả những người được đưa vào danh sách gửi email, bao gồm cả người gửi.', 'Không bao gồm người gửi', 'Chỉ người gửi', 'Trả lời chính mình'], correct: [0] },
+        { id: 12, type: 'single', q: 'Đối tượng nhập bản ghi mới, xóa, sửa trong Access:', options: ['Table', 'Query', 'Report', 'Form'], correct: [3] },
+        { id: 13, type: 'single', q: 'Đơn vị đo dung lượng RAM phổ biến:', options: ['MHz', 'MB', 'GB', 'GHz'], correct: [2] },
+        { id: 14, type: 'single', q: 'Đơn vị đo tốc độ mạng:', options: ['bps, Kbps', 'Mbps', 'Gbps', 'Tất cả đơn vị đo ở trên'], correct: [3] },
+        { id: 15, type: 'single', q: 'Firmware là gì?', options: ['Trình duyệt', 'Phần mềm đầu tiên chạy trên thiết bị phần cứng khi nó được bật lên', 'Driver', 'HĐH'], correct: [1] },
+        { id: 16, type: 'single', q: 'Gói dịch vụ (service pack) là gì?', options: ['Spyware', 'Chế độ tắt máy', 'Một tập hợp các bản cập nhật phần mềm.', 'HĐH nhúng'], correct: [2] },
+        { id: 17, type: 'single', q: 'GUI là viết tắt của:', options: ['Great User Interface', 'Good User Interface', 'Graphics User Interaction', 'Graphical User Interface'], correct: [3] },
+        { id: 18, type: 'single', q: 'Phím tắt sao chép và dán tập tin:', options: ['Ctrl+X và Ctrl+V', 'Ctrl+C và Ctrl+X', 'Ctrl+X và Ctrl+P', 'Ctrl+C và Ctrl+V'], correct: [3] },
+        { id: 19, type: 'single', q: 'Ngăn sự quá nóng của bộ vi xử lý (Processor):', options: ['Hibernate 2 tiếng', 'Tiết kiệm điện', 'Không đóng nắp case', 'Thêm không gian trống trong case máy tính'], correct: [3] },
+        { id: 20, type: 'multiple', q: 'Địa chỉ đúng trong Excel 2010:', options: ['D4 là địa chỉ cột 4 (D) và dòng 4', 'Địa chỉ ô cấu tạo từ địa chỉ cột và địa chỉ hàng', 'D4 không phải địa chỉ ô'], correct: [0, 1] },
+        { id: 21, type: 'single', q: 'Hệ điều hành Windows làm gì?', options: ['Hiển thị hình ảnh', 'Cho phép giao tiếp giữa người sử dụng, các ứng dụng phần mềm, và các phần cứng', 'Khởi động tắt máy', 'Quản lý thư mục'], correct: [1] },
+        { id: 22, type: 'single', q: 'Hệ điều hành hỗ trợ TCP/IP:', options: ['Chỉ Windows', 'Windows, Mac OS, Linux/Unix', 'Chỉ Mac OS', 'Unix và Linux'], correct: [1] },
+        { id: 23, type: 'single', q: 'Hệ thống số thập phân dùng cho:', options: ['Mở rộng', 'Giải mã', 'Con người sử dụng để tính', 'Thực hiện'], correct: [2] },
+        { id: 24, type: 'single', q: 'Hiệu ứng chuyển trang slide trong PowerPoint:', options: ['Transition', 'Switch slide', 'Switch page', 'Animations'], correct: [0] },
+        { id: 25, type: 'single', q: 'Truyền thông tốt nhất khi không cần phản hồi khẩn cấp:', options: ['gửi tin nhắn tức thời', 'Email', 'Blog', 'tin nhắn văn bản'], correct: [0] },
+        { id: 26, type: 'single', q: 'HTML viết tắt của:', options: ['Hypertext Markup Links', 'Help Management Links', 'Hypertext Management Logic', 'Hypertext Markup Language'], correct: [3] },
+        { id: 27, type: 'multiple', q: 'Internet là gì?', options: ['Mỗi website trang web trên thế giới', 'Mạng vật lý máy tính thiết bị toàn cầu', 'Mạng toàn cầu kết nối sử dụng giao thức chuẩn', 'Mạng nhiều máy tính'], correct: [1, 2] },
+        { id: 28, type: 'single', q: 'Kết nối nào là kết nối không dây?', options: ['Parallel', 'RJ45', 'Hotspot', '4G LTE/3G GPRS'], correct: [3] },
+        { id: 29, type: 'single', q: 'Kết nối tạm thời sử dụng đường dây điện thoại tương đương:', options: ['dial-up modem', 'dial-up line', 'dedicated line', 'T1 line'], correct: [1] },
+        { id: 30, type: 'single', q: 'Khái niệm HĐH thực thi nhiều tiến trình cùng lúc:', options: ['Đa phiên', 'Đa người dùng', 'Đa nhiệm', 'Đơn nhiệm'], correct: [2] },
+        { id: 31, type: 'single', q: 'Khi bật máy tính, hệ thống hiển thị cái gì trước tiên?', options: ['Ứng dụng cài đặt', 'Kết nối điện', 'Kết nối mạng', 'Hệ điều hành'], correct: [3] },
+        { id: 32, type: 'multiple', q: 'Màn hình máy tính bị đen, khắc phục:', options: ['Kiểm tra kết nối máy tính', 'Kiểm tra ổ cắm điện', 'Lau bụi', 'Kiểm tra màn hình được bật chưa'], correct: [0, 1, 3] },
+        { id: 33, type: 'single', q: 'Đo tốc độ bộ vi xử lý, 1 hertz đại diện cho:', options: ['1 chu kỳ/phút', '1 lệnh/phút', 'Một lệnh máy tính trên giây', '1 bit/giây'], correct: [2] },
+        { id: 34, type: 'single', q: 'Chế độ máy tính lưu chương trình vào RAM:', options: ['Sleep(tạm nghỉ)', 'Hibernate(ngủ đông)', 'Shut down', 'Restart'], correct: [0] },
+        { id: 35, type: 'single', q: 'Khi nào sử dụng Quick Style:', options: ['Thiếu chủ đề', 'Chỉ có văn bản', 'Khi muốn định dạng chi tiết các loại văn bản như tiêu đề, nhan đề...', 'Định dạng biểu đồ'], correct: [2] },
+        { id: 36, type: 'single', q: 'Khi nào nên bấm Enter khi soạn văn bản?', options: ['Cuối dòng 1', 'Khi bạn đến cuối của một đoạn văn hoặc khi bạn muốn chèn một dòng trống', 'Mở tài liệu', 'Cuối mỗi dòng lề phải'], correct: [1] },
+        { id: 37, type: 'single', q: 'Gõ ký tự Tab trong Table Word 2010:', options: ['Ctrl + Tab', 'Tab', 'Shift + Tab', 'Alt + Tab'], correct: [0] },
+        { id: 38, type: 'single', q: 'Khoảng 1 nghìn tỷ byte:', options: ['Terabyte (TB)', 'Bóng bán dẫn', 'Gigahertz (GHz)', 'Gigabyte (GB)'], correct: [0] },
+        { id: 39, type: 'single', q: 'Khu vực nhập giá trị và công thức trong Excel:', options: ['Standard Tool bar', 'Title bar', 'Formula bar', 'Menu bar'], correct: [2] },
+        { id: 40, type: 'single', q: 'Bộ nhớ nhỏ, nhanh, giảm thời gian chờ của CPU:', options: ['Bộ nhớ động', 'Bộ nhớ ảo', 'Bộ nhớ Cache', 'Bộ nhớ tĩnh'], correct: [2] },
+        { id: 41, type: 'single', q: 'Bộ nhớ KHÔNG mất dữ liệu khi tắt điện:', options: ['CACHE', 'DRAM', 'SSD', 'SRAM'], correct: [2] },
+        { id: 42, type: 'multiple', q: 'Bộ nhớ không mất dữ liệu khi tắt điện:', options: ['DVD', 'Ổ đĩa flash USB', 'RAM', 'SSD'], correct: [0, 1, 3] },
+        { id: 43, type: 'single', q: 'Kiểu dữ liệu KHÔNG hợp lệ trong Excel:', options: ['Label', 'Number', 'Character', 'Date/Time'], correct: [2] },
+        { id: 44, type: 'single', q: 'Kết nối Internet tốc độ nhanh nhất:', options: ['Cáp quang', 'Vệ tinh', 'ISDN', 'Cáp đồng trục'], correct: [0] },
+        { id: 45, type: 'single', q: 'L1 và L2 cache là gì?', options: ['Hệ thống bus', '2 loại SOF cache', '2 loại bộ nhớ cache', 'Mô-đun bộ nhớ'], correct: [2] },
+        { id: 46, type: 'single', q: 'Bộ mã hóa đại diện cho dữ liệu rộng rãi nhất:', options: ['ASCII "American Standard Code of Information interchange".', 'Centrino', 'Phép tính', 'ALU'], correct: [0] },
+        { id: 47, type: 'single', q: 'Biết bản cập nhật Windows 7 mới:', options: ['Mail 15 ngày', 'Microsoft có chương trình cấu hình phát hiện và cài đặt bản cập nhật.', 'Không thông báo', 'Thư giấy'], correct: [1] },
+        { id: 48, type: 'single', q: 'Tăng không gian đĩa trống đĩa cứng:', options: ['Right-click Delete', 'Chọn tập tin và nhấn Shift + Delete', 'Ctrl + Delete', 'Delete'], correct: [1] },
+        { id: 49, type: 'single', q: 'Lưu trang web truy cập nhanh sau này:', options: ['Lưu vào mục yêu thích (Favorites).', 'In trang web', 'Gửi email', 'Lưu tài liệu'], correct: [0] },
+        { id: 50, type: 'single', q: 'LAN đại diện cho:', options: ['Local area network (mạng cục bộ)', 'Wide area network', 'Local area nature', 'Legal area network'], correct: [0] },
+        { id: 51, type: 'single', q: 'Lệnh hiển thị tất cả cấu hình IP trên Windows:', options: ['ipconfig/all', 'ping', 'ipconfig', 'tracert'], correct: [0] },
+        { id: 52, type: 'single', q: 'Lệnh kiểm tra kết nối giữa hai thiết bị mạng:', options: ['FTP', 'ping', 'Google', 'ipconfig'], correct: [1] },
+        { id: 53, type: 'single', q: 'Lịch sử duyệt web (History) là gì?', options: ['Bản ghi đầy đủ các website và các trang web đã truy cập', 'Bản ghi không truy cập', 'Trang đã đăng nhập', 'Bản ghi email'], correct: [0] },
+        { id: 54, type: 'single', q: 'Loại RAM phải tái nạp năng lượng liên tục:', options: ['Unicode', 'FireWire', 'RAM động (DRAM).', 'SRAM'], correct: [2] },
+        { id: 55, type: 'single', q: 'Loại chuột sử dụng cảm biến laser:', options: ['a. Chuột laser', 'b. Máy in laser', 'c. Mã vạch', 'd. Chuột không khí'], correct: [0] },
+        { id: 56, type: 'single', q: 'Máy tính cung cấp dịch vụ cho các máy khách:', options: ['Rack', 'Switch', 'Máy trạm', 'Máy chủ'], correct: [3] },
+        { id: 57, type: 'single', q: 'Máy tính chạy chuyên môn hóa, chia sẻ tài nguyên dữ liệu lớn:', options: ['desktop', 'netbook', 'server', 'tablet'], correct: [2] },
+        { id: 58, type: 'single', q: 'Giải pháp giải quyết vấn đề chung phần cứng:', options: ['Gỡ bỏ các thành phần phần cứng để tìm lỗi', 'Khôi phục cấu hình', 'Safe mode', 'Chống phân mảnh'], correct: [0] },
+        { id: 59, type: 'single', q: 'Giải pháp giải quyết vấn đề phần cứng:', options: ['Safe mode', 'Chống phân mảnh', 'Gỡ bỏ các thành phần phần cứng để tìm lỗi', 'Khôi phục cấu hình'], correct: [2] },
+        { id: 60, type: 'single', q: 'Lựa chọn là một nút trên Internet (Internet node):', options: ['Antivirus', 'Máy chủ (Server)', 'Hosting', 'DNS'], correct: [1] }
+      ],
+      test4: [
+        { id: 1, type: 'single', q: 'Triệu chứng lỗi bộ nhớ RAM:', options: ['Hệ thống không khởi động và nghe tiếng kêu bíp lặp đi lặp lại.', 'Chỉ admin truy cập', 'Luôn vào Safe Mode', 'Không có âm thanh'], correct: [0] },
+        { id: 2, type: 'multiple', q: 'Lựa chọn nào là hệ điều hành?', options: ['Hardware', 'Windows', 'Android', 'Microsoft Office'], correct: [1, 2] },
+        { id: 3, type: 'single', q: 'Lựa chọn nào là chương trình trình chiếu?', options: ['Google', 'Microsoft PowerPoint', 'Microsoft Word', 'Mozilla Firefox'], correct: [1] },
+        { id: 4, type: 'multiple', q: 'Lựa chọn nào là công cụ tìm kiếm?', options: ['Yahoo!', 'Facebook', 'Bing', 'Google'], correct: [0, 2, 3] },
+        { id: 5, type: 'multiple', q: 'Đặc điểm hệ điều hành hiện đại:', options: ['Thời gian thực.', 'Không thể học được.', 'Đa nhiệm.', 'Sử dụng thời gian hạn chế.'], correct: [0, 2] },
+        { id: 6, type: 'multiple', q: 'Đặc điểm của email: (Chọn tất cả áp dụng)', options: ['Video chat', 'Yêu cầu địa chỉ email người nhận', 'Yêu cầu username & password', 'Trao đổi tin nhắn kỹ thuật số với người khác'], correct: [1, 2, 3] },
+        { id: 7, type: 'single', q: 'Lựa chọn nào là hệ điều hành?', options: ['Skype', 'Android', 'Facebook', 'Bing'], correct: [1] },
+        { id: 8, type: 'single', q: 'Ví dụ về mạng WAN:', options: ['Mạng văn phòng', 'Internet', 'Mạng nhà', 'TELNET'], correct: [1] },
+        { id: 9, type: 'single', q: 'Đặc điểm lưu trữ đám mây:', options: ['Server vật lý duy nhất', 'Phục hồi thời gian ngắn', 'Phục hồi không cần mạng', 'Dữ liệu có thể truy cập từ máy tính/thông qua Internet có thông tin truy cập'], correct: [3] },
+        { id: 10, type: 'single', q: 'File Word 2010 mở rộng:', options: ['Docx', 'Txt', 'Xlsx', 'Pptx'], correct: [0] },
+        { id: 11, type: 'single', q: 'Ví dụ về URL:', options: ['john.smith@email.com', '#twitter', 'http://www.microsoft.com', 'C:\\Docs'], correct: [2] },
+        { id: 12, type: 'single', q: 'Thời gian đọc dữ liệu từ bộ nhớ gọi là:', options: ['Bóng bán dẫn', 'Giải quyết', 'Thời gian truy xuất', 'RIMM'], correct: [2] },
+        { id: 13, type: 'single', q: 'Mã nguồn mở là gì?', options: ['Trình duyệt', 'Bản quyền thương mại', 'Phần cứng', 'Một loại bản quyền phần mềm'], correct: [3] },
+        { id: 14, type: 'single', q: 'Mạng đơn giản không quá 10 máy tính:', options: ['Ethernet', 'Network', 'Mạng đồng đẳng (peer-to-peer network)', 'Home network'], correct: [2] },
+        { id: 15, type: 'single', q: 'Mạng MAN:', options: ['LAN', 'Home network', 'Mạng đô thị (thành phố...) - metropolitan area network (MAN)', 'Client/server'], correct: [2] },
+        { id: 16, type: 'single', q: 'Máy in vẽ thiết kế kỹ thuật bản đồ chất lượng cao:', options: ['a. Máy quét', 'b. Bút', 'c. Loa', 'd. Máy vẽ'], correct: [3] },
+        { id: 17, type: 'single', q: 'Máy tính ứng dụng giải trí:', options: ['Nghe nhạc', 'Ngủ', 'Chơi', 'Nghỉ'], correct: [0] },
+        { id: 18, type: 'single', q: 'Khi khởi động chương trình ứng dụng, máy tính sẽ:', options: ['Nạp một bản sao chỉ dẫn hoạt động của chương trình vào RAM', 'Lưu file cũ', 'Kiểm tra đĩa', 'Đóng ứng dụng khác'], correct: [0] },
+        { id: 19, type: 'single', q: 'Topology mạng dạng vòng khép kín:', options: ['ring network', 'home network', 'Network', 'star network'], correct: [0] },
+        { id: 20, type: 'single', q: 'Mỗi dòng dữ liệu trong bảng Datasheet gọi là:', options: ['Database', 'Table', 'Record', 'Field'], correct: [2] },
+        { id: 21, type: 'single', q: 'Định dạng dữ liệu số thành Text trong Excel dùng ký tự đứng trước:', options: ['Tilde(~)', 'Exclamation(!)', 'Apostrophe(\')', 'Hash(#)'], correct: [2] },
+        { id: 22, type: 'single', q: 'Site license là gì?', options: ['Giấy phép cài đặt và sử dụng trên nhiều máy tính tại một địa điểm', 'Một máy ở bất kỳ đâu', 'Một máy một vị trí', 'Nhiều máy bất kỳ vị trí'], correct: [0] },
+        { id: 23, type: 'single', q: 'Phần của Bus truyền dữ liệu thực tế:', options: ['Bus dữ liệu', 'Địa chỉ bus', 'Khoang đĩa', 'PCI bus'], correct: [0] },
+        { id: 24, type: 'single', q: 'Một phần tỉ của giây (10^-9 s):', options: ['Đơn vị kiểm soát', 'Card âm thanh', 'Bus mở rộng', 'Một nano giây (ns).'], correct: [3] },
+        { id: 25, type: 'single', q: 'Một siêu liên kết (hyperlink) là gì?', options: ['Chữ màu khác', 'Một tham chiếu tới dữ liệu có thể được truy cập bằng cách nhấp chuột vào nó', 'URL', 'Địa chỉ mạng'], correct: [1] },
+        { id: 26, type: 'single', q: 'Tập hợp điều kiện lọc hiển thị bản ghi gọi là:', options: ['Query', 'Điều kiện (tiêu chuẩn)-Criteria', 'Datasheet', 'Filter'], correct: [1] },
+        { id: 27, type: 'single', q: 'Tập hợp trang liên kết thông tin về công ty hay sản phẩm:', options: ['ISP', 'Server web', 'Internet', 'Một trang web'], correct: [3] },
+        { id: 28, type: 'single', q: 'Truy vấn thêm, xóa hoặc cập nhật dữ liệu gọi là:', options: ['Select query', 'Action query', 'Parameter query', 'Total query'], correct: [1] },
+        { id: 29, type: 'single', q: 'Mục tiêu chính của hệ điều hành:', options: ['Quản lý user', 'Tách người sử dụng khỏi sự phức tạp của phần cứng', 'Dùng máy đúng cách', 'Hấp dẫn hơn'], correct: [1] },
+        { id: 30, type: 'single', q: 'Thường xuyên ghé thăm vài trang web nên:', options: ['Cài ActiveX', 'Xóa History', 'Đánh dấu mỗi trang (Bookmark/Favorite)', 'Đặt làm trang chủ'], correct: [2] },
+        { id: 31, type: 'single', q: 'Người và máy tính giao tiếp thông qua:', options: ['Chuột', 'Hệ điều hành.', 'Đĩa cứng', 'Bàn phím'], correct: [1] },
+        { id: 32, type: 'single', q: 'Người và máy tính giao tiếp thông qua:', options: ['Bàn phím', 'Đĩa cứng', 'Hệ điều hành.', 'Chuột'], correct: [2] },
+        { id: 33, type: 'single', q: 'USB 3.0 so với USB 2.0:', options: ['bay', 'Byte', 'Unicode', 'Nhanh hơn 10 lần (USB 3.0)'], correct: [3] },
+        { id: 34, type: 'single', q: 'Nhanh hơn tác vụ chuyển dữ liệu giúp chương trình chạy nhanh hơn:', options: ['Tốc độ đồng hồ', 'Cung cấp điện', 'Bus tốc độ cao.', 'FireWire'], correct: [2] },
+        { id: 35, type: 'single', q: 'Đơn vị đo dung lượng ổ cứng:', options: ['GHz', 'Số lượng lõi', 'SSD', 'GB'], correct: [3] },
+        { id: 36, type: 'single', q: 'Ứng dụng giải trí cá nhân:', options: ['Soạn nhạc', 'Soạn văn bản', 'Tạo cơ sở dữ liệu', 'Xem phim'], correct: [3] },
+        { id: 37, type: 'single', q: 'Máy tính phần cứng rất mạnh cung cấp dịch vụ:', options: ['Máy tính bảng', 'Laptop', 'Smartphone', 'Máy chủ'], correct: [3] },
+        { id: 38, type: 'single', q: 'Máy tính thiết bị kết nối Server nguồn tài nguyên gọi là:', options: ['clients.', 'WiMAX', 'Latency', 'SMS'], correct: [0] },
+        { id: 39, type: 'single', q: 'Phát biểu ĐÚNG về tốc độ vi xử lý:', options: ['Chỉ phụ thuộc CPU', '2 GHz gấp đôi 1 GHz', 'Tốc độ của một bộ vi xử lý được đo bằng Hertz (Hz)', 'Gigahertz lớn hơn luôn nhanh hơn'], correct: [2] },
+        { id: 40, type: 'single', q: 'Tùy chọn Change trong Uninstall a program:', options: ['Thay đổi một chương trình bao gồm tùy chọn cài đặt và gỡ bỏ của ứng dụng', 'Tất cả sửa được', 'Thành nguyên bản', 'Không xuất hiện'], correct: [0] },
+        { id: 41, type: 'single', q: 'Tùy chọn Change trong Uninstall a program:', options: ['Không xuất hiện', 'Tất cả sửa được', 'Thay đổi một chương trình bao gồm các tùy chọn cài đặt và gỡ bỏ của một ứng dụng', 'Thành nguyên bản'], correct: [2] },
+        { id: 42, type: 'single', q: 'Thiết bị xuất:', options: ['Webcam', 'Microphone', 'Bàn phím', 'Màn hình'], correct: [3] },
+        { id: 43, type: 'multiple', q: 'Vùng dữ liệu tự động điền khi gửi email:', options: ['From', 'Subject', 'To', 'Date'], correct: [0, 3] },
+        { id: 44, type: 'single', q: 'Phân biệt Sheet và Workbook:', options: ['Workbook là toàn bộ tập tin chứa các trang tính', 'Chia sẻ tự động', 'Dùng nhiều sheet', 'Dùng chương trình khác'], correct: [0] },
+        { id: 45, type: 'single', q: 'Phần mềm chia sẻ (Shareware) dùng thử miễn phí hạn chế tính năng:', options: ['Đúng', 'Sai'], correct: [0] },
+        { id: 46, type: 'single', q: 'Phần mềm Microsoft Excel là:', options: ['Phần mềm xử lý bảng tính toán và thống kê trực quan', 'Quản trị CSDL', 'Chỉnh sửa ảnh', 'Soạn thảo văn bản'], correct: [0] },
+        { id: 47, type: 'single', q: 'Mở rộng file Word 2010:', options: ['Pptx', 'Docx', 'Txt', 'Xlsx'], correct: [1] },
+        { id: 48, type: 'single', q: 'Định dạng KHÔNG liên quan bảng tính Excel 2010:', options: ['xlsx', 'BMP', 'Xla', 'xls'], correct: [1] },
+        { id: 49, type: 'single', q: 'Phát biểu đúng về địa chỉ Email:', options: ['Phân cách bởi #', 'Địa chỉ email gồm tên người dùng và tên miền phân cách bởi ký hiệu @', 'Tên do supplier cấp', 'Tên trùng trong 1 domain'], correct: [1] },
+        { id: 50, type: 'single', q: 'So sánh ROM và RAM:', options: ['ROM lưu tạm, RAM lưu OS', 'RAM không mất dữ liệu', 'Bộ nhớ RAM là bộ nhớ đọc và ghi, trong khi ROM là bộ nhớ chỉ đọc', 'RAM ROM ngẫu nhiên'], correct: [2] },
+        { id: 51, type: 'single', q: 'Phát biểu đúng về CPU:', options: ['Processing Unit', 'Tạo bởi RAM ROM', 'CPU thường được tích hợp với một chip gọi là vi xử lý', 'Nhắm đến phần mềm'], correct: [2] },
+        { id: 52, type: 'single', q: 'Phát biểu SAI trong Excel 2010:', options: ['Text canh trái', 'Date canh phải', 'Khi nhập dữ liệu vào bảng tính, mặc định dữ liệu kiểu số sẽ canh thẳng lề trái', 'Boolean canh giữa'], correct: [2] },
+        { id: 53, type: 'single', q: 'Phỉ báng khác vu khống:', options: ['Nổi tiếng', 'Vu khống chỉ xảy ra bằng lời nói, phỉ báng bằng văn bản', 'Phạt tiền', 'Không khác'], correct: [1] },
+        { id: 54, type: 'single', q: 'Chọn các đoạn văn bản không liền kề nhau:', options: ['Ctrl', 'Fn', 'Alt', 'Shift'], correct: [0] },
+        { id: 55, type: 'single', q: 'Phím thực hiện kiểm tra chính tả (Spelling):', options: ['F5', 'F9', 'F3', 'F7'], correct: [3] },
+        { id: 56, type: 'single', q: 'Chọn các đoạn văn bản không liền kề:', options: ['Ctrl', 'Shift', 'Fn', 'Alt'], correct: [0] },
+        { id: 57, type: 'single', q: 'Xem nhiều website trên trình duyệt nhanh nhất:', options: ['Màn hình riêng', 'Nhập đ/c mới trang hiện tại', 'Mở một thẻ mới (Tab) và nhập địa chỉ', 'Phiên làm việc khác'], correct: [2] },
+        { id: 58, type: 'single', q: 'Sử dụng nhiều bộ xử lý đồng thời thực hiện nhiệm vụ:', options: ['Xử lý song song', 'Cổng nối tiếp', 'Xử lý lõi kép', 'Xử lý'], correct: [0] },
+        { id: 59, type: 'single', q: 'Quan hệ giữa Bit và Byte:', options: ['1 bit = 2 bytes', '1 bit = 24 byte', '1 bit = 8 bytes', '1 byte = 8 bit'], correct: [3] },
+        { id: 60, type: 'single', q: 'Quan hệ giữa Bit và Byte:', options: ['1 bit = 2 bytes', '1 bit = 24 byte', '1 bit = 8 bytes', '1 byte = 8 bit'], correct: [3] }
+      ],
+      test5: [
+        { id: 1, type: 'single', q: 'RAM viết tắt của cụm từ nào?', options: ['Resources of Memory', 'Random Access Memory', 'Random Output Measure', 'Storage of Memory'], correct: [1] },
+        { id: 2, type: 'single', q: 'ROM viết tắt của cụm từ nào?', options: ['Random Output Measure', 'Read Only Memory', 'Start menu', 'Resources of Memory'], correct: [1] },
+        { id: 3, type: 'single', q: 'Safe Mode là gì?', options: ['Khởi động lại Windows chỉ nạp các yếu tố cần thiết nhất', 'Giao thức mạng', 'Thông báo lỗi', 'Cập nhật firmware'], correct: [0] },
+        { id: 4, type: 'multiple', q: 'Thay đổi màu nền sau khi chọn Template:', options: ['Design Template', 'Color Effect', 'Animation Scheme', 'Color Scheme'], correct: [1, 3] },
+        { id: 5, type: 'single', q: 'Số lượng điểm ảnh theo chiều ngang và dọc hiển thị:', options: ['a. Giám sát', 'b. Đầu ra', 'c. Độ phân giải', 'd. Chuột'], correct: [2] },
+        { id: 6, type: 'single', q: 'Ký tự loại trừ từ tìm kiếm trong Search Engine:', options: ['Dấu ngoặc ()', 'Dấu trừ -', 'Dấu ngoặc {}', 'Từ Without'], correct: [1] },
+        { id: 7, type: 'single', q: 'Sự khác biệt giữa Biểu mẫu (Form) và Báo cáo (Report):', options: ['Form xuất, Report nhập', 'Form tạo bởi user', 'Các biểu mẫu nhận dữ liệu đầu vào trong khi báo cáo xuất dữ liệu'], correct: [2] },
+        { id: 8, type: 'single', q: 'Tại sao nên thiết lập trang web làm Favorites?', options: ['Ghi lịch sử', 'Đặt làm trang chủ', 'Đánh dấu địa chỉ website giúp nhanh chóng truy cập bất cứ lúc nào', 'Tự động thêm MXH'], correct: [2] },
+        { id: 9, type: 'single', q: 'Tại sao đổi tên trang tính (Sheet)?', options: ['Khớp tên Workbook', 'Xác định Sheet 2010', 'Để trợ giúp cho việc xác định các nội dung', 'Thêm màu'], correct: [2] },
+        { id: 10, type: 'single', q: 'Tùy chỉnh phong cách bullet style cho danh sách:', options: ['Để tạo ra một hình thức trình bày khác cho tài liệu', 'Thụt lề', 'Chuyển sang đánh số', 'Đổi thứ tự'], correct: [0] },
+        { id: 11, type: 'single', q: 'Áp dụng Theme đã tích hợp sẵn trong PowerPoint:', options: ['Thêm âm thanh', 'Sử dụng bài mẫu', 'Để đạt được 1 thể thống nhất cho các phông chữ và màu sắc'], correct: [2] },
+        { id: 12, type: 'single', q: 'Ưu điểm của biểu đồ so với bảng số liệu:', options: ['In giấy lớn', 'Nhiều màu', 'Một biểu đồ minh họa xu hướng hay dáng điệu dữ liệu rõ ràng hơn', 'Nhiều dữ liệu hơn'], correct: [2] },
+        { id: 13, type: 'single', q: 'Tên bộ công cụ lệnh dọc phía trên Word 2010:', options: ['Command tab', 'Microsoft Office Strip', 'Ribbon', 'Toolbar'], correct: [2] },
+        { id: 14, type: 'single', q: 'Tính năng quản lý file trong bộ Office:', options: ['Office File Manager', 'Windows Explorer', 'Choose File', 'Backstage View'], correct: [3] },
+        { id: 15, type: 'single', q: 'Thành phần thực hiện tính toán và phép toán logic:', options: ['Chip RAM', 'Bộ vi xử lý (ALU/CPU)', 'Bo mạch chủ', 'ROM-BIOS'], correct: [1] },
+        { id: 16, type: 'single', q: 'Thành phần quyết định việc khởi động máy tính:', options: ['CPU', 'ROM-BIOS', 'RAM', 'Hard drive'], correct: [1] },
+        { id: 17, type: 'single', q: 'Chọn nhiều đối tượng không liên tiếp trong Windows:', options: ['Nháy phải chuột', 'Shift + Click', 'Nhấn giữ phím Ctrl và nháy chuột vào từng đối tượng.', 'Click đơn'], correct: [2] },
+        { id: 18, type: 'single', q: 'Thay đổi màn hình nền Desktop trong Control Panel:', options: ['Clock', 'User Accounts', 'Appearance and Personalization', 'Network'], correct: [2] },
+        { id: 19, type: 'single', q: 'Mặc định Workbook có Sheet1, Sheet2, Sheet3. Chèn Sheet mới giữa Sheet1 và Sheet3:', options: ['Right click Sheet1 Insert', 'Nhấp chuột phải vào Sheet 2 và chọn Insert', 'Không đúng', 'Right click Sheet3 Insert'], correct: [1] },
+        { id: 20, type: 'single', q: 'Thiết bị đầu ra âm thanh:', options: ['a. Bút', 'b. Loa', 'c. Điểm ảnh', 'd. Máy in'], correct: [1] },
+        { id: 21, type: 'single', q: 'Hiển thị hình ảnh màn hình ra kích thước lớn hơn:', options: ['c. Nhãn máy in', 'a. Dòng máy in', 'b. Màn hình LCD', 'd. Máy chiếu (projector)'], correct: [3] },
+        { id: 22, type: 'single', q: 'Thiết bị tích hợp in, quét, copy, fax:', options: ['a. Thiết bị trỏ', 'b. In kim', 'c. Nonimpact', 'd. Thiết bị ngoại vi đa chức năng'], correct: [3] },
+        { id: 23, type: 'single', q: 'Thiết bị kết nối hệ thống và điều khiển bởi vi xử lý:', options: ['Khoang đĩa', 'firmware', 'Ngoại vi.', 'RAM'], correct: [2] },
+        { id: 24, type: 'single', q: 'Thiết bị LAN kết nối hai hệ thống riêng lẻ hoặc nhiều mạng:', options: ['router', 'switch', 'hub', 'bridge'], correct: [1] },
+        { id: 25, type: 'single', q: 'Thiết bị được thay thế khi sử dụng màn hình cảm ứng:', options: ['Microphone', 'Chuột', 'Máy quét', 'Máy in'], correct: [1] },
+        { id: 26, type: 'single', q: 'Thành phần KHÔNG phải là thiết bị ngoại vi PC:', options: ['Máy nghe nhạc MP3', 'Chuột', 'Loa', 'Máy in'], correct: [0] },
+        { id: 27, type: 'single', q: 'Máy tính di chuyển màn hình cảm ứng thay bàn phím rời:', options: ['Smartphone', 'Notebook', 'Máy tính bảng (Tablet)', 'Laptop'], correct: [2] },
+        { id: 28, type: 'multiple', q: 'Phần cứng bên trong máy tính: (Chọn tất cả áp dụng)', options: ['RAM', 'Chuột', 'Máy in', 'CPU'], correct: [0, 3] },
+        { id: 29, type: 'multiple', q: 'Phần cứng bên trong máy tính: (Chọn tất cả áp dụng)', options: ['RAM', 'Chuột', 'Máy in', 'CPU'], correct: [0, 3] },
+        { id: 30, type: 'single', q: 'Thiết bị ngoại vi là gì?', options: ['Một loại phần mềm', 'Công cụ tìm kiếm', 'Phần cứng bên trong', 'Các thành phần phần cứng bên ngoài có thể được kết nối với máy tính'], correct: [3] },
+        { id: 31, type: 'single', q: 'Thiết bị chuyển đổi tín hiệu số sang tương tự và ngược lại qua đường điện thoại:', options: ['digital modem', 'ISDN modem', 'dial-up modem', 'wireless modem'], correct: [2] },
+        { id: 32, type: 'single', q: 'Tiện ích bảo vệ máy tính khỏi bị tấn công:', options: ['Disk compression', 'Disk check', 'Disk defragmentation', 'Antivirus software - phần mềm diệt virus'], correct: [3] },
+        { id: 33, type: 'single', q: 'Toán tử tìm kiếm là gì trong công cụ tìm kiếm?', options: ['Những từ được thêm vào để giúp thu hẹp kết quả tìm kiếm', 'Tìm giá', 'Tăng số lượng', 'Làm phức tạp'], correct: [0] },
+        { id: 34, type: 'single', q: 'Tốc độ truyền tải dữ liệu nào nhanh nhất?', options: ['3 Gbps', '3000000 bps', '300 Kbps', '300 Mbps'], correct: [0] },
+        { id: 35, type: 'single', q: 'Trang tổ chức phi lợi nhuận liên quan đến tên miền:', options: ['org', 'gov', 'edu', 'com'], correct: [0] },
+        { id: 36, type: 'single', q: 'Trang web thương mại/ISP liên quan tên miền:', options: ['edu', 'gov', 'net', 'com'], correct: [2] },
+        { id: 37, type: 'single', q: 'Trình duyệt web là gì?', options: ['Ứng dụng gửi email', 'Ứng dụng hiển thị web', 'Phần mềm được sử dụng để duyệt các website trên World Wide Web.', 'Ứng dụng truy cập Internet'], correct: [2] },
+        { id: 38, type: 'single', q: 'Trường dữ liệu trong Access tự động tăng giá trị:', options: ['Auto Number', 'Auto Increment', 'Auto value', 'Auto Evaluate'], correct: [0] },
+        { id: 39, type: 'single', q: 'Địa chỉ tuyệt đối không đổi khi copy công thức Excel:', options: ['B$2:D$8', 'B$2$:D$8$', '$B2:$D8', '$B$2:$D$8'], correct: [3] },
+        { id: 40, type: 'single', q: 'Địa chỉ tuyệt đối không đổi khi copy công thức Excel:', options: ['$B$2:$D$8', 'B$2$:D$8$', '$B2:$D8', 'B$2:D$8'], correct: [0] },
+        { id: 41, type: 'single', q: 'Trong Excel thông báo lỗi #REF! có nghĩa là gì?', options: ['Định dạng tiền tệ chứa text', 'Ô tham chiếu rỗng', 'Hai dấu chấm thập phân', 'Khi ô tham chiếu không hợp lệ'], correct: [3] },
+        { id: 42, type: 'single', q: 'Tập tin làm việc tính toán và lưu trữ dữ liệu trong Excel gọi là:', options: ['Presentation', 'Document', 'WorkBook', 'WorkSheet'], correct: [2] },
+        { id: 43, type: 'single', q: 'Phục hồi tất cả các đối tượng trong Recycle Bin:', options: ['Delete', 'Restore', 'Undo Delete', 'Redo'], correct: [1] },
+        { id: 44, type: 'single', q: 'Xem danh sách tài liệu thao tác gần nhất trong Windows:', options: ['File -> Open Near', 'Start -> My Documents', 'Nháy Start và My Recent Documents', 'File -> Open Recent'], correct: [2] },
+        { id: 45, type: 'single', q: 'Muốn đóng (thoát) cửa sổ chương trình ứng dụng đang làm việc:', options: ['Shift + F4', 'Ctrl + F3', 'Nhấn tổ hợp phím Alt + F4.', 'Edit -> Office Clipboard'], correct: [2] },
+        { id: 46, type: 'single', q: 'Khôi phục đối tượng đã xóa trong cửa sổ Recycle Bin:', options: ['Edit -> Restore', 'File -> Delete', 'Nháy File và Restore.', 'Edit -> Delete'], correct: [2] },
+        { id: 47, type: 'single', q: 'Thuộc tính hiển thị thanh công việc Taskbar trên các cửa sổ:', options: ['Show clock', 'Auto-Hide Taskbar', 'Keep the Taskbar on top of other Windows', 'Lock Taskbar'], correct: [2] },
+        { id: 48, type: 'single', q: 'Kết thúc 1 đoạn văn (Paragraph) sang đoạn mới trong Word:', options: ['Bấm phím Enter', 'Tự động', 'Ctrl + Enter', 'Shift + Enter'], correct: [0] },
+        { id: 49, type: 'single', q: 'Xuống dòng không kết thúc đoạn trong Word 2010:', options: ['Shift+Enter', 'Ctrl + Enter', 'Alt + Enter', 'Shift + Tab'], correct: [0] },
+        { id: 50, type: 'single', q: 'Ngắt văn bản thành nhiều dòng trong 1 ô Excel:', options: ['Alt + End', 'Ctrl + A1', 'Enter + Alt', 'Wrap text'], correct: [3] },
+        { id: 51, type: 'single', q: 'Chọn các cột liền kề trên cùng Sheet Excel:', options: ['Nhấn Shift vào tiêu đề cột, giữ và rê chuột sang các cột cần chọn', 'Ctrl + Shift + Drag', 'Ctrl + Drag', 'Shift thả ra'], correct: [0] },
+        { id: 52, type: 'single', q: 'Lựa chọn nhiều ô/khối ô không liền nhau trong Excel:', options: ['Shift + Click', 'Rê chuột', 'Nhấn Ctrl trên bàn phím kết hợp với click chuột trái vào các ô', 'Alt + Click'], correct: [2] },
+        { id: 53, type: 'single', q: 'Nhập công thức sai tên hàm trong Excel hiện lỗi:', options: ['#NAME?', 'FALSE', '#VALUE!', '#N/A'], correct: [0] },
+        { id: 54, type: 'single', q: 'Phần mở rộng mặc định tập tin Excel 2010:', options: ['xslx', 'xlxs', 'Xlsx', 'xls'], correct: [2] },
+        { id: 55, type: 'single', q: 'Tổ hợp phím đóng bảng tính hiện hành đang mở:', options: ['Shift + W', 'Alt + W', 'Ctrl + W', 'Ctrl + V'], correct: [2] },
+        { id: 56, type: 'single', q: 'Các địa chỉ ô $A1, B$5 thuộc kiểu địa chỉ gì?', options: ['Địa chỉ hỗn hợp', 'Địa chỉ tuyệt đối', 'Tuyệt đối khối', 'Địa chỉ tương đối'], correct: [0] },
+        { id: 57, type: 'single', q: 'Dạng địa chỉ tuyệt đối trong Excel:', options: ['$B2:$D8', '$B$2:$D$8', 'B$2$:D$8$', 'B$2:D$8'], correct: [1] },
+        { id: 58, type: 'single', q: 'Dạng địa chỉ tuyệt đối trong Excel:', options: ['B$2$:D$8$', '$B2:$D8', 'B$2:D$8', '$B$2:$D$8'], correct: [3] },
+        { id: 59, type: 'single', q: 'Ba nút mặc định trên Quick Access Toolbar trước khi tùy biến:', options: ['New, Redo, Save', 'Undo, Redo, Save', 'Open, Undo, Save', 'Print, Undo, Redo'], correct: [1] },
+        { id: 60, type: 'single', q: 'Ba nút mặc định trên Quick Access Toolbar trước khi tùy biến:', options: ['New, Redo, Save', 'Print, Undo, Redo', 'Open, Undo, Save', 'Undo, Redo, Save'], correct: [3] }
+      ],
+      test6: [
+        { id: 1, type: 'single', q: 'Trong PowerPoint 2010, bài thuyết trình lưu mở rộng:', options: ['xlsx', 'pdf', 'pptx', 'docx'], correct: [2] },
+        { id: 2, type: 'single', q: 'Đứng ở slide đầu tiên, bấm phím để trình chiếu:', options: ['Ctrl+F5', 'Alt+F5', 'Icon slide show', 'Nhấn F5 trên bàn phím'], correct: [3] },
+        { id: 3, type: 'single', q: 'Phần mở rộng của tập tin trình chiếu PowerPoint:', options: ['BMP', 'PPTX', 'DOCX', 'TXT'], correct: [1] },
+        { id: 4, type: 'single', q: 'Sử dụng mẫu thiết kế (themes) trong PowerPoint:', options: ['Người dùng có thể tạo ra một số themes mới và áp dụng trên nhiều bản trình chiếu', 'Chỉ dùng sẵn có', 'Không dùng bên ngoài', 'Chỉ áp dụng file đang mở'], correct: [0] },
+        { id: 5, type: 'single', q: 'Bật chế độ Show/Hide ¶, ký hiệu ¶ xuất hiện biểu thị:', options: ['Phím Tab', 'Alt+Enter', 'Đại diện cho phím Enter để kết thúc đoạn (paragraph)', 'Shift+Enter'], correct: [2] },
+        { id: 6, type: 'single', q: 'Viết chỉ số trên (Superscript) trong Word 2010:', options: ['Ctrl + T', 'Bấm tổ hợp phím CTRL+SHIFT +"="', 'Alt + F8', 'Shift + "="'], correct: [1] },
+        { id: 7, type: 'single', q: 'Di chuyển con trỏ văn bản đến đầu đoạn văn tiếp theo:', options: ['Tổ hợp phím Ctrl + Down Arrow', 'Page Down', 'Ctrl + Home', 'Home'], correct: [0] },
+        { id: 8, type: 'single', q: 'Tổ hợp phím Ctrl + C trong Word 2010 thực hiện:', options: ['Sao chép các mục đang được chọn vào Clipboard', 'Canh giữa', 'Xóa mục', 'Đổi màu'], correct: [0] },
+        { id: 9, type: 'single', q: 'Tổ hợp phím Ctrl + N trong Word 2010 thực hiện:', options: ['Mở cửa sổ để nhập tài liệu mới', 'Đóng cửa sổ', 'Đổi tên', 'Hộp thoại lưu'], correct: [0] },
+        { id: 10, type: 'single', q: 'Khi chọn một đối tượng (Object) trong Word 2010:', options: ['Bôi đen', 'Tám ô vuông nhỏ xuất hiện xung quanh đối tượng', 'Hiện cửa sổ riêng', 'Thành trắng đen'], correct: [1] },
+        { id: 11, type: 'single', q: 'Xuống dòng mà không kết thúc đoạn văn bản:', options: ['Bấm tổ hợp phím Shift+Enter', 'Ctrl+Enter', 'Alt+Enter', 'Enter'], correct: [0] },
+        { id: 12, type: 'single', q: 'Mở hộp thoại Tìm kiếm và Thay thế (Find & Replace):', options: ['Ctrl + F', 'Double click status bar', 'Thẻ Home / Nhóm Editing / chọn Replace (hoặc bấm Ctrl+H)', 'Insert Text Box'], correct: [2] },
+        { id: 13, type: 'single', q: 'Nhóm công cụ trên Ribbon chứa chức năng thay đổi khoảng cách dòng:', options: ['Page Setup', 'Drawing', 'Paragraph', 'Font'], correct: [2] },
+        { id: 14, type: 'single', q: 'Thanh công cụ Quick Access Toolbar trong Word:', options: ['Xóa nhanh', 'Thoát nhanh', 'Giúp người dùng thực hiện nhanh một số chức năng thông dụng', 'Chèn hình'], correct: [2] },
+        { id: 15, type: 'single', q: 'Thanh Quick Access Toolbar có tác dụng gì?', options: ['Giúp người dùng có thể thao tác một vài chức năng nhanh chóng và tức thời', 'Xóa nội dung', 'Chèn ảnh', 'Thoát Word'], correct: [0] },
+        { id: 16, type: 'single', q: 'Thao tác SAI khi muốn chọn toàn bộ (Select All) văn bản:', options: ['Ctrl + A', 'Home / Select / Select All', 'Shift + Click điểm cuối', 'Insert / Select / Select All'], correct: [3] },
+        { id: 17, type: 'single', q: 'Tổ hợp phím mở hộp thoại Open file trong Word:', options: ['Ctrl + H', 'Shift + P', 'Ctrl + O', 'Ctrl + K'], correct: [2] },
+        { id: 18, type: 'single', q: 'Phím tắt thay đổi font chữ cho văn bản đã chọn:', options: ['Ctrl + H', 'Ctrl + Shift + K', 'Ctrl + Shift + P', 'Ctrl + O'], correct: [2] },
+        { id: 19, type: 'single', q: 'Đóng cửa sổ văn bản hiện hành trong MS Word:', options: ['Ctrl-V', 'Alt-W', 'Shift-W', 'Ctrl-W'], correct: [3] },
+        { id: 20, type: 'single', q: 'Đóng cửa sổ văn bản hiện hành trong MS Word:', options: ['Alt-W', 'Ctrl-W', 'Ctrl-V', 'Shift-W'], correct: [1] },
+        { id: 21, type: 'single', q: 'Ẩn / Hiện thanh Ribbon trong Word 2010:', options: ['Ctrl + F5', 'Nhấn nút phải chuột tại thẻ bất kỳ / Chọn Minimize the Ribbon', 'Double click Ruler', 'Ctrl + Shift + F4'], correct: [1] },
+        { id: 22, type: 'single', q: 'Chế độ hiển thị 3 khung Outline, Slide, Notes trong PowerPoint:', options: ['Normal', 'Slide Sorter', 'Reading View', 'Slide Show'], correct: [0] },
+        { id: 23, type: 'single', q: 'Phím tắt Ctrl + D trong PowerPoint 2010:', options: ['Chỉnh sửa slide', 'Nhân bản slide đang chọn', 'Thêm mới slide', 'Xóa slide'], correct: [1] },
+        { id: 24, type: 'single', q: 'Khi tạo mới bản trình diễn PowerPoint:', options: ['Trình diễn tạo ra có thể là Blank presentation, Template có sẵn hoặc từ file Word', 'Luôn trống', 'Chỉ từ file ppt', 'Tạo từ file cũ'], correct: [0] },
+        { id: 25, type: 'single', q: 'Kẻ đường thẳng thật thẳng trong Word Shapes giữ phím:', options: ['Alt + Shift', 'Ctrl', 'Shift', 'Ctrl + Alt'], correct: [1] },
+        { id: 26, type: 'single', q: 'Di chuyển nhanh con trỏ về đầu dòng:', options: ['Home', 'Ctrl + Home', 'Ctrl + Down Arrow', 'Page Down'], correct: [0] },
+        { id: 27, type: 'single', q: 'Độ rộng ô nhỏ hơn độ dài dữ liệu kiểu số hiển thị ký tự:', options: ['#', '$', '?', '*'], correct: [0] },
+        { id: 28, type: 'single', q: 'Thiết lập mặc định cách ngày tháng hiển thị trong Excel:', options: ['Mặc định Office', 'Region and Language trong Control panel', 'Excel Options', 'Format Cells'], correct: [1] },
+        { id: 29, type: 'single', q: 'Thiết lập thời gian cho mỗi đối tượng trong PowerPoint:', options: ['View slide sorter', 'Slide show, custom animation', 'Transition', 'Format animation'], correct: [1] },
+        { id: 30, type: 'single', q: 'Chia cửa sổ làm việc thành 2 phần khác nhau:', options: ['Format Window Split', 'View (Window(Split', 'View Split', 'Window Split'], correct: [1] },
+        { id: 31, type: 'single', q: 'Các bộ định dạng thiết lập sẵn, đặt tên và lưu lại:', options: ['Style', 'Toolbar', 'View', 'Format'], correct: [0] },
+        { id: 32, type: 'single', q: 'Tùy chọn là nhóm (Group) trong tab Insert Ribbon:', options: ['Page layout', 'Paragraph', 'Font', 'Illustration'], correct: [3] },
+        { id: 33, type: 'single', q: 'Tuyên bố chính xác về Ổ đĩa thể rắn (SSD):', options: ['Dung lượng lớn hơn ổ từ', 'Ít tốn kém hơn', 'Ổ đĩa thể rắn không có bộ phận chuyển động.', 'Không mang ra ngoài'], correct: [2] },
+        { id: 34, type: 'single', q: 'URL viết tắt của cụm từ nào?', options: ['Uniform Resource Locator', 'Uniform Resize Locator', 'Under Resource Locator', 'Uniform Resource Locate'], correct: [0] },
+        { id: 35, type: 'single', q: 'Ý nghĩa của biểu tượng ¶ khi bật trong văn bản:', options: ['Mở file mới', 'Hiện kí hiệu đánh dấu đoạn văn bản', 'Đã nhấn Tab', 'Đã nhấn Enter'], correct: [1] },
+        { id: 36, type: 'single', q: 'Web là gì?', options: ['Giao thức mạng', 'Loại phần mềm', 'Một hệ thống các trang web được kết nối bằng các đường link', 'Toàn bộ Internet'], correct: [2] },
+        { id: 37, type: 'single', q: 'WWW là viết tắt của:', options: ['Wild Wild West', 'World Wide WAN', 'World Wide Web', 'World Wide Fund for Nature'], correct: [2] },
+        { id: 38, type: 'single', q: 'Ý nghĩa của Recycle Bin (thùng rác):', options: ['Một khu vực lưu trữ tạm thời cho các tập tin và thư mục bị xóa', 'Lưu file người dùng khác', 'File cũ sắp xóa', 'Thư mục cũ'], correct: [0] }
+      ]
+    };
+
+    // APPLICATION STATE MANAGER
+    class App {
+      constructor() {
+        this.currentUser = JSON.parse(localStorage.getItem('tin_hoc_user')) || null;
+        this.users = JSON.parse(localStorage.getItem('tin_hoc_users_db')) || {};
+        this.authMode = 'login'; // 'login' or 'register'
+        
+        // Quiz runtime state
+        this.currentTestKey = null;
+        this.currentQuestions = [];
+        this.currentIndex = 0;
+        this.userAnswers = {}; // { qIndex: [selectedIndexes] }
+        this.checkedQuestions = {}; // { qIndex: true }
+        this.timerSeconds = 0;
+        this.timerInterval = null;
+        
+        this.init();
+      }
+
+      init() {
+        this.renderNav();
+        if (!this.currentUser) {
+          this.showView('auth');
+        } else {
+          this.navToHome();
+        }
+      }
+
+      // NAV USER STATUS BAR
+      renderNav() {
+        const container = document.getElementById('nav-user-section');
+        if (this.currentUser) {
+          container.innerHTML = `
+            <div class="flex items-center space-x-2 bg-slate-100 dark:bg-slate-700/60 px-3 py-1.5 rounded-xl">
+              <i class="fa-solid fa-circle-user text-sky-500 text-lg"></i>
+              <span class="font-semibold text-xs sm:text-sm">${this.escapeHtml(this.currentUser.username)}</span>
+            </div>
+            <button onclick="app.logout()" class="p-2 text-slate-500 hover:text-red-500 transition" title="Đăng xuất">
+              <i class="fa-solid fa-right-from-bracket"></i>
+            </button>
+          `;
+        } else {
+          container.innerHTML = `
+            <button onclick="app.showAuthModal()" class="px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs sm:text-sm font-semibold transition">
+              Đăng nhập / Đăng ký
+            </button>
+          `;
+        }
+      }
+
+      // VIEW SWITCHER
+      showView(viewName) {
+        ['auth-view', 'home-view', 'quiz-view', 'result-view'].forEach(id => {
+          document.getElementById(id).classList.add('hidden');
+        });
+        document.getElementById(`${viewName}-view`).classList.remove('hidden');
+        window.scrollTo(0, 0);
+      }
+
+      showAuthModal() {
+        this.showView('auth');
+      }
+
+      toggleAuthMode() {
+        this.authMode = this.authMode === 'login' ? 'register' : 'login';
+        const title = document.getElementById('auth-title');
+        const subtitle = document.getElementById('auth-subtitle');
+        const submitBtn = document.getElementById('auth-submit-btn');
+        const toggleText = document.getElementById('auth-toggle-text');
+        const toggleBtn = document.getElementById('auth-toggle-btn');
+        const errorDiv = document.getElementById('auth-error');
+        errorDiv.classList.add('hidden');
+
+        if (this.authMode === 'register') {
+          title.textContent = 'Đăng ký tài khoản mới';
+          subtitle.textContent = 'Tạo tài khoản để bắt đầu lưu tiến trình học tập';
+          submitBtn.textContent = 'Đăng ký ngay';
+          toggleText.textContent = 'Đã có tài khoản?';
+          toggleBtn.textContent = 'Đăng nhập';
+        } else {
+          title.textContent = 'Đăng nhập tài khoản';
+          subtitle.textContent = 'Đăng nhập để lưu lịch sử làm bài & kết quả ôn tập';
+          submitBtn.textContent = 'Đăng nhập';
+          toggleText.textContent = 'Chưa có tài khoản?';
+          toggleBtn.textContent = 'Đăng ký ngay';
+        }
+      }
+
+      handleAuth(e) {
+        e.preventDefault();
+        const username = document.getElementById('auth-username').value.trim();
+        const password = document.getElementById('auth-password').value.trim();
+        const errorDiv = document.getElementById('auth-error');
+
+        if (!username || !password) {
+          errorDiv.textContent = 'Vui lòng điền đầy đủ tên đăng nhập và mật khẩu!';
+          errorDiv.classList.remove('hidden');
+          return;
+        }
+
+        if (this.authMode === 'register') {
+          if (this.users[username]) {
+            errorDiv.textContent = 'Tên đăng nhập này đã tồn tại!';
+            errorDiv.classList.remove('hidden');
+            return;
+          }
+          // Register new user
+          this.users[username] = { password: password, history: {} };
+          localStorage.setItem('tin_hoc_users_db', JSON.stringify(this.users));
+          this.currentUser = { username: username };
+          localStorage.setItem('tin_hoc_user', JSON.stringify(this.currentUser));
+          this.renderNav();
+          this.navToHome();
+        } else {
+          // Login
+          if (!this.users[username] || this.users[username].password !== password) {
+            errorDiv.textContent = 'Sai tên đăng nhập hoặc mật khẩu!';
+            errorDiv.classList.remove('hidden');
+            return;
+          }
+          this.currentUser = { username: username };
+          localStorage.setItem('tin_hoc_user', JSON.stringify(this.currentUser));
+          this.renderNav();
+          this.navToHome();
+        }
+      }
+
+      logout() {
+        this.currentUser = null;
+        localStorage.removeItem('tin_hoc_user');
+        this.renderNav();
+        this.showView('auth');
+      }
+
+      // HOME DASHBOARD & TEST SELECTION
+      navToHome() {
+        if (!this.currentUser) return this.showView('auth');
+        this.renderUserStats();
+        this.renderTestCards();
+        this.showView('home');
+      }
+
+      getUserHistory() {
+        if (!this.currentUser) return {};
+        const userData = this.users[this.currentUser.username];
+        return (userData && userData.history) ? userData.history : {};
+      }
+
+      saveTestResult(testKey, score, correctCount, totalCount, timeSpent) {
+        if (!this.currentUser) return;
+        const history = this.getUserHistory();
+        history[testKey] = {
+          score: score,
+          correctCount: correctCount,
+          totalCount: totalCount,
+          timeSpent: timeSpent,
+          date: new Date().toLocaleDateString('vi-VN')
+        };
+        this.users[this.currentUser.username].history = history;
+        localStorage.setItem('tin_hoc_users_db', JSON.stringify(this.users));
+      }
+
+      renderUserStats() {
+        const history = this.getUserHistory();
+        const completedTests = Object.keys(history).length;
+        let totalCorrect = 0;
+        let totalAnswered = 0;
+
+        Object.values(history).forEach(h => {
+          totalCorrect += h.correctCount || 0;
+          totalAnswered += h.totalCount || 0;
+        });
+
+        const accuracy = totalAnswered > 0 ? Math.round((totalCorrect / totalAnswered) * 100) : 0;
+
+        const statsCard = document.getElementById('user-stats-card');
+        statsCard.innerHTML = `
+          <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 flex items-center space-x-3">
+            <div class="p-3 bg-sky-100 dark:bg-sky-900/40 text-sky-600 rounded-xl"><i class="fa-solid fa-circle-check text-xl"></i></div>
+            <div>
+              <p class="text-xs text-slate-500">Đã hoàn thành</p>
+              <p class="text-lg font-bold">${completedTests} / 7 Bài</p>
+            </div>
+          </div>
+          <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 flex items-center space-x-3">
+            <div class="p-3 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 rounded-xl"><i class="fa-solid fa-bullseye text-xl"></i></div>
+            <div>
+              <p class="text-xs text-slate-500">Tỷ lệ chính xác</p>
+              <p class="text-lg font-bold">${accuracy}%</p>
+            </div>
+          </div>
+          <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 flex items-center space-x-3">
+            <div class="p-3 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 rounded-xl"><i class="fa-solid fa-database text-xl"></i></div>
+            <div>
+              <p class="text-xs text-slate-500">Tổng câu đúng</p>
+              <p class="text-lg font-bold">${totalCorrect} Câu</p>
+            </div>
+          </div>
+          <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 flex items-center space-x-3">
+            <div class="p-3 bg-amber-100 dark:bg-amber-900/40 text-amber-600 rounded-xl"><i class="fa-solid fa-user text-xl"></i></div>
+            <div>
+              <p class="text-xs text-slate-500">Học viên</p>
+              <p class="text-lg font-bold truncate max-w-[100px]">${this.escapeHtml(this.currentUser.username)}</p>
+            </div>
+          </div>
+        `;
+      }
+
+      renderTestCards() {
+        const grid = document.getElementById('test-list-grid');
+        const history = this.getUserHistory();
+
+        const tests = [
+          { key: 'test1', title: 'TEST 1', count: RAW_TEST_DATA.test1.length, desc: '60 câu phần cứng, phần mềm, Windows, mạng & Access', icon: 'fa-1', color: 'from-blue-500 to-cyan-500' },
+          { key: 'test2', title: 'TEST 2', count: RAW_TEST_DATA.test2.length, desc: '60 câu chuẩn hóa Office, Word, Excel, PowerPoint & Virus', icon: 'fa-2', color: 'from-indigo-500 to-purple-500' },
+          { key: 'test3', title: 'TEST 3', count: RAW_TEST_DATA.test3.length, desc: '60 câu phím tắt, thiết bị nhập xuất, Internet & Excel', icon: 'fa-3', color: 'from-emerald-500 to-teal-500' },
+          { key: 'test4', title: 'TEST 4', count: RAW_TEST_DATA.test4.length, desc: '60 câu mạng LAN/WAN, Email, RAM, ROM, Bit Byte', icon: 'fa-4', color: 'from-amber-500 to-orange-500' },
+          { key: 'test5', title: 'TEST 5', count: RAW_TEST_DATA.test5.length, desc: '60 câu Excel nâng cao, địa chỉ ô, tìm kiếm & Windows', icon: 'fa-5', color: 'from-rose-500 to-pink-500' },
+          { key: 'test6', title: 'TEST 6', count: RAW_TEST_DATA.test6.length, desc: '38 câu Word 2010, PowerPoint 2010, phím tắt & SSD', icon: 'fa-6', color: 'from-violet-500 to-purple-600' },
+          { key: 'combined', title: 'BÀI TEST TỔNG HỢP', count: 60, desc: 'Phối trộn ngẫu nhiên 60 câu lấy từ 6 đề test trên', icon: 'fa-shuffle', color: 'from-fuchsia-600 to-pink-600', isSpecial: true }
+        ];
+
+        grid.innerHTML = tests.map(t => {
+          const past = history[t.key];
+          const badgeScore = past ? `<span class="text-xs bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300 font-semibold px-2.5 py-1 rounded-full">Đã làm: ${past.score}/10đ</span>` : `<span class="text-xs bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300 px-2.5 py-1 rounded-full">Chưa làm</span>`;
+
+          return `
+            <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col justify-between hover:shadow-md transition">
+              <div>
+                <div class="flex items-center justify-between mb-4">
+                  <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr ${t.color} text-white flex items-center justify-center font-bold text-xl shadow-md">
+                    <i class="fa-solid ${t.icon}"></i>
+                  </div>
+                  ${badgeScore}
                 </div>
-                <button onclick="closeHistoryModal()" class="text-slate-400 hover:text-slate-600 p-2 rounded-lg"><i class="fa-solid fa-xmark text-xl"></i></button>
-            </div>
-            <div class="p-6 overflow-y-auto flex-1">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase">
-                            <th class="py-2">Thời Gian</th>
-                            <th class="py-2">Tên Bài Test</th>
-                            <th class="py-2 text-center">Kết Quả</th>
-                            <th class="py-2 text-right">Điểm Số</th>
-                        </tr>
-                    </thead>
-                    <tbody id="historyTableBody" class="divide-y divide-slate-100 text-sm">
-                        <!-- Đổ dữ liệu lịch sử -->
-                    </tbody>
-                </table>
-            </div>
-            <div class="p-4 border-t border-slate-100 text-right bg-slate-50 rounded-b-2xl">
-                <button onclick="closeHistoryModal()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium rounded-lg text-sm">Đóng</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Thêm/Sửa Sinh Viên -->
-    <div id="addUserModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200">
-            <h3 class="text-lg font-bold text-slate-800 mb-4">Thêm Sinh Viên Mới</h3>
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Tên Đăng Nhập / Mã SV</label>
-                    <input type="text" id="newUsername" placeholder="Ví dụ: sv2026_01" class="w-full p-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                <h4 class="text-xl font-bold text-slate-900 dark:text-white">${t.title}</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">${t.desc}</p>
+                <div class="mt-4 flex items-center space-x-4 text-xs font-medium text-slate-500">
+                  <span><i class="fa-regular fa-file-lines text-sky-500 mr-1"></i> ${t.count} câu hỏi</span>
+                  <span><i class="fa-regular fa-clock text-amber-500 mr-1"></i> ${t.count} phút</span>
                 </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Mật Khẩu</label>
-                    <input type="text" id="newPassword" placeholder="Nhập mật khẩu..." class="w-full p-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-                </div>
+              </div>
+
+              <button onclick="app.startQuiz('${t.key}')" class="mt-6 w-full py-3 rounded-2xl bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-semibold text-sm hover:opacity-90 shadow transition active:scale-95 flex items-center justify-center space-x-2">
+                <i class="fa-solid fa-play text-xs"></i>
+                <span>Bắt Đầu Làm Bài</span>
+              </button>
             </div>
-            <div class="mt-6 flex justify-end space-x-3">
-                <button onclick="closeAddUserModal()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-sm rounded-lg font-medium">Hủy</button>
-                <button onclick="saveNewUser()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm rounded-lg font-medium">Lưu Sinh Viên</button>
-            </div>
-        </div>
-    </div>
+          `;
+        }).join('');
+      }
 
-    <!-- JavaScript Quản Lý Admin -->
-    <script>
-        // Mật khẩu mặc định vào trang Admin là admin123 (Nếu chưa đăng nhập sẽ hỏi)
-        function checkAdminAuth() {
-            const isAdminLoggedIn = sessionStorage.getItem('isAdminLoggedIn');
-            if (!isAdminLoggedIn) {
-                const pass = prompt('Vui lòng nhập mật khẩu Quản Trị Viên (Admin):');
-                if (pass === 'admin123' || pass === 'admin') {
-                    sessionStorage.setItem('isAdminLoggedIn', 'true');
-                } else {
-                    alert('Mật khẩu Admin không đúng!');
-                    window.location.href = 'index.html';
-                }
+      // QUIZ EXECUTION ENGINE
+      startQuiz(testKey) {
+        this.currentTestKey = testKey;
+        this.currentIndex = 0;
+        this.userAnswers = {};
+        this.checkedQuestions = {};
+
+        // Generate Question List
+        if (testKey === 'combined') {
+          // Flatten all questions from test1-6
+          let allQ = [];
+          Object.keys(RAW_TEST_DATA).forEach(k => {
+            allQ = allQ.concat(RAW_TEST_DATA[k]);
+          });
+          // Shuffle array
+          const shuffled = [...allQ].sort(() => 0.5 - Math.random());
+          this.currentQuestions = shuffled.slice(0, 60);
+        } else {
+          this.currentQuestions = [...RAW_TEST_DATA[testKey]];
+        }
+
+        // Set Quiz UI
+        const testNames = {
+          test1: 'TEST 1 (60 câu)', test2: 'TEST 2 (60 câu)', test3: 'TEST 3 (60 câu)',
+          test4: 'TEST 4 (60 câu)', test5: 'TEST 5 (60 câu)', test6: 'TEST 6 (38 câu)',
+          combined: 'BÀI TEST TỔNG HỢP (60 câu)'
+        };
+        document.getElementById('quiz-title').textContent = testNames[testKey] || 'Bài Test';
+
+        // Start Timer
+        this.timerSeconds = 0;
+        clearInterval(this.timerInterval);
+        this.timerInterval = setInterval(() => {
+          this.timerSeconds++;
+          const mins = String(Math.floor(this.timerSeconds / 60)).padStart(2, '0');
+          const secs = String(this.timerSeconds % 60).padStart(2, '0');
+          document.getElementById('quiz-timer').textContent = `${mins}:${secs}`;
+        }, 1000);
+
+        this.renderQuizNavPills();
+        this.renderCurrentQuestion();
+        this.showView('quiz');
+      }
+
+      renderQuizNavPills() {
+        const container = document.getElementById('quiz-nav-pills');
+        container.innerHTML = this.currentQuestions.map((q, idx) => {
+          const isAnswered = this.userAnswers[idx] && this.userAnswers[idx].length > 0;
+          const isCurrent = idx === this.currentIndex;
+          const isChecked = this.checkedQuestions[idx];
+
+          let btnClass = 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300';
+          if (isChecked) {
+            // Check correctness for pill badge color
+            const isCorrect = this.evaluateQuestion(idx);
+            btnClass = isCorrect ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white';
+          } else if (isAnswered) {
+            btnClass = 'bg-sky-500 text-white';
+          }
+
+          if (isCurrent) {
+            btnClass += ' ring-2 ring-offset-2 ring-sky-500 font-bold';
+          }
+
+          return `
+            <button onclick="app.jumpToQuestion(${idx})" class="w-9 h-9 shrink-0 rounded-xl text-xs font-semibold flex items-center justify-center transition ${btnClass}">
+              ${idx + 1}
+            </button>
+          `;
+        }).join('');
+      }
+
+      renderCurrentQuestion() {
+        const q = this.currentQuestions[this.currentIndex];
+        document.getElementById('quiz-progress-text').textContent = `Câu ${this.currentIndex + 1} / ${this.currentQuestions.length}`;
+        document.getElementById('question-number-badge').textContent = `Câu ${this.currentIndex + 1}`;
+        document.getElementById('question-type-badge').textContent = q.type === 'multiple' ? 'Chọn NHIỀU đáp án' : 'Chọn 1 đáp án';
+        document.getElementById('question-text').textContent = q.q;
+
+        // Score Live Update
+        let correctCount = 0;
+        Object.keys(this.checkedQuestions).forEach(idx => {
+          if (this.evaluateQuestion(parseInt(idx))) correctCount++;
+        });
+        document.getElementById('quiz-score-live').textContent = `Đúng: ${correctCount}`;
+
+        // Options
+        const container = document.getElementById('question-options-list');
+        const userSelected = this.userAnswers[this.currentIndex] || [];
+        const isChecked = this.checkedQuestions[this.currentIndex];
+
+        container.innerHTML = q.options.map((opt, optIdx) => {
+          const isSelected = userSelected.includes(optIdx);
+          const isCorrectAnswer = q.correct.includes(optIdx);
+
+          let glowClass = 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800';
+          let iconHtml = '';
+
+          if (isChecked) {
+            if (isCorrectAnswer) {
+              glowClass = 'glow-correct font-semibold';
+              iconHtml = `<i class="fa-solid fa-circle-check text-emerald-500 text-lg ml-auto"></i>`;
+            } else if (isSelected && !isCorrectAnswer) {
+              glowClass = 'glow-incorrect';
+              iconHtml = `<i class="fa-solid fa-circle-xmark text-red-500 text-lg ml-auto"></i>`;
             }
-        }
-        checkAdminAuth();
+          } else if (isSelected) {
+            glowClass = 'border-sky-500 bg-sky-50 dark:bg-sky-950/40 ring-1 ring-sky-500';
+          }
 
-        function logoutAdmin() {
-            sessionStorage.removeItem('isAdminLoggedIn');
-            window.location.href = 'index.html';
-        }
+          const inputType = q.type === 'multiple' ? 'checkbox' : 'radio';
 
-        // Lấy danh sách Users từ localStorage
-        function getUsersData() {
-            return JSON.parse(localStorage.getItem('users') || '{}');
-        }
+          return `
+            <label onclick="app.selectOption(${optIdx})" class="flex items-center p-4 rounded-2xl border ${glowClass} cursor-pointer transition space-x-3 hover:border-sky-400">
+              <input type="${inputType}" name="option" ${isSelected ? 'checked' : ''} ${isChecked ? 'disabled' : ''} class="w-4 h-4 text-sky-600 focus:ring-sky-500">
+              <span class="text-sm font-medium leading-relaxed flex-1">${this.escapeHtml(opt)}</span>
+              ${iconHtml}
+            </label>
+          `;
+        }).join('');
 
-        // Render dữ liệu sinh viên lên bảng
-        function renderUserTable() {
-            const users = getUsersData();
-            const searchVal = document.getElementById('searchInput').value.toLowerCase().trim();
-            const tbody = document.getElementById('userTableBody');
-            tbody.innerHTML = '';
+        // Navigation buttons
+        document.getElementById('btn-prev-q').disabled = (this.currentIndex === 0);
+        document.getElementById('btn-next-q').disabled = (this.currentIndex === this.currentQuestions.length - 1);
 
-            let totalUsers = 0;
-            let totalTests = 0;
-            let sumScores = 0;
-            let countScores = 0;
-
-            Object.keys(users).forEach(username => {
-                const user = users[username];
-                if (searchVal && !username.toLowerCase().includes(searchVal)) return;
-
-                totalUsers++;
-                const history = user.history || [];
-                totalTests += history.length;
-
-                let userAvgScore = 0;
-                if (history.length > 0) {
-                    const sumUserScore = history.reduce((acc, curr) => {
-                        const scoreVal = parseFloat(curr.score) || 0;
-                        sumScores += scoreVal;
-                        countScores++;
-                        return acc + scoreVal;
-                    }, 0);
-                    userAvgScore = (sumUserScore / history.length).toFixed(1);
-                }
-
-                const tr = document.createElement('tr');
-                tr.className = 'hover:bg-slate-50/80 transition';
-                tr.innerHTML = `
-                    <td class="py-4 px-6 font-medium text-slate-800 flex items-center space-x-3">
-                        <div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-xs uppercase">
-                            ${username.charAt(0)}
-                        </div>
-                        <span>${username}</span>
-                    </td>
-                    <td class="py-4 px-6 text-slate-500 font-mono text-xs">${user.password || '******'}</td>
-                    <td class="py-4 px-6 text-center">
-                        <span class="px-2.5 py-1 bg-slate-100 text-slate-700 rounded-full font-semibold text-xs">${history.length} bài</span>
-                    </td>
-                    <td class="py-4 px-6 text-center">
-                        <span class="font-bold ${userAvgScore >= 5 ? 'text-emerald-600' : 'text-amber-600'}">${history.length > 0 ? userAvgScore + ' / 10' : 'Chưa thi'}</span>
-                    </td>
-                    <td class="py-4 px-6 text-center space-x-2">
-                        <button onclick="viewHistory('${username}')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 rounded-lg text-xs font-medium transition" title="Xem lịch sử">
-                            <i class="fa-solid fa-clock-rotate-left"></i> Xem Bài Làm
-                        </button>
-                        <button onclick="deleteUser('${username}')" class="px-2.5 py-1.5 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-lg text-xs font-medium transition" title="Xóa tài khoản">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-
-            // Cập nhật thẻ thống kê
-            document.getElementById('statTotalUsers').innerText = totalUsers;
-            document.getElementById('statTotalTests').innerText = totalTests;
-            document.getElementById('statAvgScore').innerText = countScores > 0 ? (sumScores / countScores).toFixed(1) + ' / 10' : '0.0 / 10';
+        // Show/hide check button for multiple choice questions if not answered yet
+        const checkBtn = document.getElementById('btn-check-q');
+        if (q.type === 'multiple' && !isChecked) {
+          checkBtn.classList.remove('hidden');
+          checkBtn.textContent = 'Xác Nhận (Nhiều đáp án)';
+          checkBtn.disabled = false;
+          checkBtn.classList.remove('opacity-50');
+        } else {
+          checkBtn.classList.add('hidden');
         }
 
-        // Xem lịch sử bài thi của 1 sinh viên
-        function viewHistory(username) {
-            const users = getUsersData();
-            const user = users[username];
-            if (!user) return;
+        this.renderQuizNavPills();
+      }
 
-            document.getElementById('modalUserName').innerText = `Lịch sử làm bài: ${username}`;
-            const tbody = document.getElementById('historyTableBody');
-            tbody.innerHTML = '';
+      selectOption(optIdx) {
+        if (this.checkedQuestions[this.currentIndex]) return; // locked after checking
 
-            const history = user.history || [];
-            if (history.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-slate-400">Sinh viên này chưa thực hiện bài thi nào.</td></tr>`;
-            } else {
-                history.slice().reverse().forEach(item => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td class="py-3 text-slate-500 text-xs">${item.date || 'N/A'}</td>
-                        <td class="py-3 font-medium text-slate-800">${item.testTitle || 'Bài kiểm tra'}</td>
-                        <td class="py-3 text-center text-xs text-slate-600">${item.correctCount}/${item.totalCount} câu đúng</td>
-                        <td class="py-3 text-right font-bold ${item.score >= 5 ? 'text-emerald-600' : 'text-rose-600'}">${item.score}/10</td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            }
+        const q = this.currentQuestions[this.currentIndex];
+        let currentAnswers = this.userAnswers[this.currentIndex] ? [...this.userAnswers[this.currentIndex]] : [];
 
-            document.getElementById('historyModal').classList.remove('hidden');
+        if (q.type === 'multiple') {
+          if (currentAnswers.includes(optIdx)) {
+            currentAnswers = currentAnswers.filter(i => i !== optIdx);
+          } else {
+            currentAnswers.push(optIdx);
+          }
+          this.userAnswers[this.currentIndex] = currentAnswers;
+          this.renderCurrentQuestion();
+        } else {
+          // Single choice question: Instant evaluation on click
+          currentAnswers = [optIdx];
+          this.userAnswers[this.currentIndex] = currentAnswers;
+          this.checkedQuestions[this.currentIndex] = true;
+          this.renderCurrentQuestion();
+        }
+      }
+
+      checkAnswer() {
+        const selected = this.userAnswers[this.currentIndex];
+        if (!selected || selected.length === 0) {
+          alert('Vui lòng chọn ít nhất 1 đáp án trước khi kiểm tra!');
+          return;
         }
 
-        function closeHistoryModal() {
-            document.getElementById('historyModal').classList.add('hidden');
+        this.checkedQuestions[this.currentIndex] = true;
+        this.renderCurrentQuestion();
+      }
+
+      evaluateQuestion(qIdx) {
+        const q = this.currentQuestions[qIdx];
+        const userSel = this.userAnswers[qIdx] || [];
+        if (userSel.length !== q.correct.length) return false;
+        return q.correct.every(c => userSel.includes(c));
+      }
+
+      nextQuestion() {
+        if (this.currentIndex < this.currentQuestions.length - 1) {
+          this.currentIndex++;
+          this.renderCurrentQuestion();
         }
+      }
 
-        // Xóa sinh viên
-        function deleteUser(username) {
-            if (confirm(`Bạn có chắc chắn muốn xóa sinh viên "${username}" và toàn bộ lịch sử thi?`)) {
-                const users = getUsersData();
-                delete users[username];
-                localStorage.setItem('users', JSON.stringify(users));
-                renderUserTable();
-            }
+      prevQuestion() {
+        if (this.currentIndex > 0) {
+          this.currentIndex--;
+          this.renderCurrentQuestion();
         }
+      }
 
-        // Modal Thêm Sinh Viên
-        function showAddUserModal() {
-            document.getElementById('newUsername').value = '';
-            document.getElementById('newPassword').value = '';
-            document.getElementById('addUserModal').classList.remove('hidden');
+      jumpToQuestion(idx) {
+        this.currentIndex = idx;
+        this.renderCurrentQuestion();
+      }
+
+      confirmExitQuiz() {
+        if (confirm('Bạn có chắc muốn thoát bài test? Tiến trình hiện tại chưa nộp sẽ không được tính điểm.')) {
+          clearInterval(this.timerInterval);
+          this.navToHome();
         }
+      }
 
-        function closeAddUserModal() {
-            document.getElementById('addUserModal').classList.add('hidden');
-        }
+      finishQuiz() {
+        // Auto check all unchecked questions
+        this.currentQuestions.forEach((_, idx) => {
+          this.checkedQuestions[idx] = true;
+        });
 
-        function saveNewUser() {
-            const u = document.getElementById('newUsername').value.trim();
-            const p = document.getElementById('newPassword').value.trim();
+        clearInterval(this.timerInterval);
 
-            if (!u || !p) {
-                alert('Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu!');
-                return;
-            }
+        // Calculate final score
+        let correctCount = 0;
+        this.currentQuestions.forEach((_, idx) => {
+          if (this.evaluateQuestion(idx)) correctCount++;
+        });
 
-            const users = getUsersData();
-            if (users[u]) {
-                alert('Tên sinh viên này đã tồn tại!');
-                return;
-            }
+        const total = this.currentQuestions.length;
+        const score10 = ((correctCount / total) * 10).toFixed(2);
 
-            users[u] = { password: p, history: [] };
-            localStorage.setItem('users', JSON.stringify(users));
-            closeAddUserModal();
-            renderUserTable();
-        }
+        // Formatted Time
+        const mins = String(Math.floor(this.timerSeconds / 60)).padStart(2, '0');
+        const secs = String(this.timerSeconds % 60).padStart(2, '0');
+        const timeStr = `${mins}:${secs}`;
 
-        // Xuất báo cáo CSV / Excel
-        function exportCSV() {
-            const users = getUsersData();
-            let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; // Thêm BOM để không lỗi tiếng Việt
-            csvContent += "Tài khoản Sinh viên,Mật khẩu,Số bài đã làm,Điểm trung bình\n";
+        // Save result
+        this.saveTestResult(this.currentTestKey, score10, correctCount, total, timeStr);
 
-            Object.keys(users).forEach(u => {
-                const user = users[u];
-                const history = user.history || [];
-                let avg = 0;
-                if (history.length > 0) {
-                    const sum = history.reduce((a, b) => a + (parseFloat(b.score) || 0), 0);
-                    avg = (sum / history.length).toFixed(1);
-                }
-                csvContent += `"${u}","${user.password || ''}",${history.length},${avg}\n`;
-            });
+        // Display Result View
+        document.getElementById('result-test-name').textContent = document.getElementById('quiz-title').textContent;
+        document.getElementById('result-score').textContent = `${score10} / 10`;
+        document.getElementById('result-correct').textContent = `${correctCount}/${total}`;
+        document.getElementById('result-time').textContent = timeStr;
 
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `Bao_Cao_Sinh_Vien_${new Date().toISOString().slice(0,10)}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
+        this.showView('result');
+      }
 
-        // Khởi chạy khi load trang
-        renderUserTable();
-    </script>
+      reviewAnswers() {
+        this.showView('quiz');
+        this.currentIndex = 0;
+        this.renderCurrentQuestion();
+      }
+
+      escapeHtml(str) {
+        return String(str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+    }
+
+    // INITIALIZE APP ON WINDOW LOAD
+    let app;
+    window.onload = function() {
+      app = new App();
+    };
+  </script>
 </body>
 </html>
